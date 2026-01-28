@@ -1,0 +1,87 @@
+﻿import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { Profile } from '../../../core/models/profile.model';
+import { ProfileService } from '../../../core/services/profile.service';
+import { SnackbarService } from '../../../core/services/snackbar.service';
+
+export interface AdminClientDialogData {
+  client: Profile | null;
+}
+
+@Component({
+  selector: 'app-admin-client-dialog',
+  standalone: true,
+  imports: [ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule],
+  template: `
+    <h2 mat-dialog-title>{{ isEdit ? 'Editar cliente' : 'Agregar cliente' }}</h2>
+    <mat-dialog-content>
+      <form [formGroup]="form" class="dialog-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="full_name" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email" />
+        </mat-form-field>
+      </form>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-stroked-button mat-dialog-close>Cancelar</button>
+      <button mat-flat-button color="primary" (click)="save()" [disabled]="form.invalid || loading">
+        {{ loading ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </mat-dialog-actions>
+  `,
+  styles: [
+    `
+      .dialog-form {
+        display: grid;
+        gap: 16px;
+        margin-top: 8px;
+      }
+    `
+  ]
+})
+export class AdminClientDialogComponent {
+  loading = false;
+  isEdit = !!this.data.client;
+
+  form = this.fb.nonNullable.group({
+    full_name: [this.data.client?.full_name ?? '', [Validators.required, Validators.minLength(3), Validators.maxLength(120)]],
+    email: [this.data.client?.email ?? '', [Validators.required, Validators.email]]
+  });
+
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: AdminClientDialogData,
+    private dialogRef: MatDialogRef<AdminClientDialogComponent>,
+    private fb: FormBuilder,
+    private profileService: ProfileService,
+    private snackbar: SnackbarService
+  ) {}
+
+  async save(): Promise<void> {
+    if (this.form.invalid) {
+      return;
+    }
+    this.loading = true;
+    try {
+      const { full_name, email } = this.form.getRawValue();
+      if (this.isEdit && this.data.client) {
+        await this.profileService.updateClient(this.data.client.user_id, { full_name, email });
+      } else {
+        await this.profileService.inviteClient(full_name!, email!);
+      }
+      this.snackbar.success('Cliente guardado correctamente.');
+      this.dialogRef.close(true);
+    } catch (error: any) {
+      this.snackbar.error(error?.message || 'No se pudo guardar el cliente.');
+    } finally {
+      this.loading = false;
+    }
+  }
+}

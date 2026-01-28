@@ -1,0 +1,14 @@
+﻿.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 720px) {
+  .header-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

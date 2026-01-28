@@ -1,0 +1,50 @@
+﻿<div class="freca-shell">
+  <mat-toolbar class="freca-toolbar">
+    <div class="freca-logo">
+      <img src="assets/logo.jpg" alt="FRECA" />
+      <span>FRECA Files</span>
+    </div>
+    <ng-container *ngIf="!isLoginRoute && (auth.profile$ | async) as profile; else guest">
+      <nav class="freca-nav">
+        <a
+          mat-button
+          routerLink="/admin/clientes"
+          routerLinkActive="active"
+          *ngIf="profile.role === 'administrator'">
+          Clientes
+        </a>
+        <a
+          mat-button
+          routerLink="/admin/archivos"
+          routerLinkActive="active"
+          *ngIf="profile.role === 'administrator'">
+          Archivos
+        </a>
+        <a
+          mat-button
+          routerLink="/client/archivos"
+          routerLinkActive="active"
+          *ngIf="profile.role === 'client'">
+          Mis archivos
+        </a>
+      </nav>
+      <span class="spacer"></span>
+      <span class="freca-badge">{{ profile.role === 'administrator' ? 'Administrador' : 'Cliente' }}</span>
+      <button mat-button [matMenuTriggerFor]="userMenu">
+        {{ profile.full_name }}
+      </button>
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item (click)="goHome()">Inicio</button>
+        <button mat-menu-item (click)="signOut()">Cerrar sesion</button>
+      </mat-menu>
+    </ng-container>
+    <ng-template #guest>
+      <span class="spacer"></span>
+      <span class="freca-muted" *ngIf="!isLoginRoute">Portal de clientes</span>
+    </ng-template>
+  </mat-toolbar>
+
+  <main class="freca-main">
+    <router-outlet></router-outlet>
+  </main>
+</div>

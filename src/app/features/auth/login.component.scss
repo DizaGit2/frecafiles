@@ -1,0 +1,31 @@
+﻿.login-layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+}
+
+.login-card {
+  width: min(520px, 92vw);
+}
+
+.login-brand {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.login-brand img {
+  width: 64px;
+  height: 64px;
+}
+
+.login-form {
+  display: grid;
+  gap: 16px;
+}
+
+.invite-copy {
+  margin-bottom: 16px;
+}

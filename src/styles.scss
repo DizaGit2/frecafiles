@@ -1,0 +1,196 @@
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+$freca-primary-palette: mat.m2-define-palette((
+  50: #fef7ec,
+  100: #fde8c6,
+  200: #fbd89e,
+  300: #f8c774,
+  400: #f5ba55,
+  500: #f2b544,
+  600: #ea9f31,
+  700: #dc8623,
+  800: #c96d1b,
+  900: #a74c12,
+  contrast: (
+    50: #1a1a1a,
+    100: #1a1a1a,
+    200: #1a1a1a,
+    300: #1a1a1a,
+    400: #1a1a1a,
+    500: #1a1a1a,
+    600: #ffffff,
+    700: #ffffff,
+    800: #ffffff,
+    900: #ffffff
+  )
+));
+
+$freca-accent-palette: mat.m2-define-palette((
+  50: #fef2e7,
+  100: #fdd7bb,
+  200: #fbbc8a,
+  300: #f7a15f,
+  400: #f1893f,
+  500: #d9822b,
+  600: #c46f25,
+  700: #a85a1f,
+  800: #8a471a,
+  900: #623314,
+  contrast: (
+    50: #1a1a1a,
+    100: #1a1a1a,
+    200: #1a1a1a,
+    300: #1a1a1a,
+    400: #1a1a1a,
+    500: #ffffff,
+    600: #ffffff,
+    700: #ffffff,
+    800: #ffffff,
+    900: #ffffff
+  )
+));
+
+$freca-warn-palette: mat.m2-define-palette(mat.$m2-red-palette);
+
+$freca-theme: mat.m2-define-dark-theme((
+  color: (
+    primary: $freca-primary-palette,
+    accent: $freca-accent-palette,
+    warn: $freca-warn-palette
+  ),
+  typography: mat.m2-define-typography-config(
+    $font-family: ('Newsreader', 'Garamond', 'Georgia', serif)
+  )
+));
+
+@include mat.all-component-themes($freca-theme);
+
+:root {
+  --freca-gold: #f2b544;
+  --freca-amber: #d9822b;
+  --freca-charcoal: #0b0b0b;
+  --freca-graphite: #151515;
+  --freca-ash: #b6aca2;
+  --freca-mist: #1a1a1a;
+  --freca-card: #151515;
+  --freca-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+}
+
+html, body {
+  height: 100%;
+}
+
+body.freca-body {
+  margin: 0;
+  background: radial-gradient(circle at top left, rgba(242, 181, 68, 0.2), transparent 45%),
+    radial-gradient(circle at 20% 20%, rgba(217, 130, 43, 0.15), transparent 50%),
+    linear-gradient(180deg, #0b0b0b 0%, #121212 45%, #1a1a1a 100%);
+  color: #f2ece4;
+  font-family: 'Newsreader', 'Garamond', 'Georgia', serif;
+}
+
+.freca-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.freca-toolbar {
+  background: linear-gradient(120deg, #0b0b0b 0%, #151515 55%, #0f0f0f 100%);
+  color: #fef7ec;
+  border-bottom: 3px solid var(--freca-gold);
+}
+
+.freca-toolbar .mat-mdc-button {
+  color: #fef7ec;
+}
+
+.freca-main {
+  flex: 1;
+  padding: 32px 24px 48px;
+}
+
+.freca-card {
+  background: var(--freca-card);
+  border: 1px solid #2a2a2a;
+  border-radius: 18px;
+  box-shadow: var(--freca-shadow);
+  padding: 24px;
+  color: #f2ece4;
+}
+
+.freca-section-title {
+  font-family: 'Cinzel', 'Times New Roman', serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fef7ec;
+}
+
+.freca-table {
+  width: 100%;
+}
+
+.freca-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.freca-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  align-items: end;
+}
+
+.freca-form-grid > * {
+  align-self: end;
+}
+
+.freca-form-grid .mat-mdc-form-field {
+  width: 100%;
+}
+
+.freca-form-grid button {
+  height: 56px;
+}
+
+.freca-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Cinzel', 'Times New Roman', serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.freca-logo img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.freca-muted {
+  color: var(--freca-ash);
+}
+
+.freca-badge {
+  background: rgba(242, 181, 68, 0.18);
+  border: 1px solid rgba(242, 181, 68, 0.45);
+  color: #fef7ec;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+@media (max-width: 720px) {
+  .freca-main {
+    padding: 20px 16px 32px;
+  }
+
+  .freca-card {
+    padding: 18px;
+  }
+}

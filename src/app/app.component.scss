@@ -1,0 +1,15 @@
+.spacer {
+  flex: 1;
+}
+
+.freca-nav {
+  display: flex;
+  gap: 8px;
+  margin-left: 16px;
+  flex-wrap: wrap;
+}
+
+.freca-nav a.active {
+  background: rgba(242, 181, 68, 0.18);
+  border: 1px solid rgba(242, 181, 68, 0.45);
+}
