@@ -2,6 +2,7 @@
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
@@ -24,6 +25,7 @@ import { AdminClientDialogComponent, AdminClientDialogData } from './admin-clien
     MatFormFieldModule,
     MatInputModule,
     MatTableModule,
+    MatTooltipModule,
     PaginatedTableComponent
   ],
   template: `
@@ -38,16 +40,20 @@ import { AdminClientDialogComponent, AdminClientDialogData } from './admin-clien
         </button>
       </div>
 
-      <form [formGroup]="filtersForm" (ngSubmit)="applyFilters()" class="freca-form-grid">
-        <mat-form-field appearance="outline">
-          <mat-label>Nombre</mat-label>
-          <input matInput formControlName="name" />
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Email</mat-label>
-          <input matInput formControlName="email" />
-        </mat-form-field>
-        <button mat-stroked-button color="primary" type="submit">Buscar</button>
+      <form [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
+        <div class="freca-form-grid">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="name" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" />
+          </mat-form-field>
+        </div>
+        <div class="freca-form-actions">
+          <button mat-stroked-button color="primary" type="submit">Buscar</button>
+        </div>
       </form>
     </section>
 
@@ -69,8 +75,12 @@ import { AdminClientDialogComponent, AdminClientDialogData } from './admin-clien
         <th mat-header-cell *matHeaderCellDef>Acciones</th>
         <td mat-cell *matCellDef="let row">
           <div class="freca-actions">
-            <button mat-stroked-button color="primary" (click)="openClientDialog(row)">Editar</button>
-            <button mat-stroked-button color="warn" (click)="confirmDelete(row)">Eliminar</button>
+            <button mat-icon-button color="primary" (click)="openClientDialog(row)" matTooltip="Editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="confirmDelete(row)" matTooltip="Eliminar">
+              <mat-icon>delete</mat-icon>
+            </button>
           </div>
         </td>
       </ng-container>

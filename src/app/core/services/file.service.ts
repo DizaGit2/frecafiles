@@ -6,7 +6,7 @@ import { MAX_FILE_SIZE_BYTES, SIGNED_URL_EXPIRY_SECONDS, STORAGE_BUCKET } from '
 
 export interface FileFilters {
   name?: string;
-  clientId?: string | null;
+  clientIds?: string[];
 }
 
 @Injectable({
@@ -14,15 +14,20 @@ export interface FileFilters {
 })
 export class FileService {
   async listFiles(filters: FileFilters, pageIndex: number, pageSize: number): Promise<PageResult<FileRecord>> {
+    // Use INNER join when filtering by clients to exclude files without matching clients
+    const selectQuery = filters.clientIds?.length
+      ? '*, file_clients!inner(client_user_id, profiles(full_name, email))'
+      : '*, file_clients(client_user_id, profiles(full_name, email))';
+
     let query = supabase
       .from('files')
-      .select('*, file_clients(client_user_id)', { count: 'exact' });
+      .select(selectQuery, { count: 'exact' });
 
     if (filters.name) {
       query = query.ilike('name', `%${filters.name}%`);
     }
-    if (filters.clientId) {
-      query = query.eq('file_clients.client_user_id', filters.clientId);
+    if (filters.clientIds?.length) {
+      query = query.in('file_clients.client_user_id', filters.clientIds);
     }
 
     const from = pageIndex * pageSize;
@@ -33,8 +38,15 @@ export class FileService {
       throw error;
     }
 
+    // Transform data to include clients array
+    const files = (data || []).map((file: any) => ({
+      ...file,
+      clients: file.file_clients?.map((fc: any) => fc.profiles).filter(Boolean) || [],
+      file_clients: undefined
+    }));
+
     return {
-      data: (data || []) as FileRecord[],
+      data: files as FileRecord[],
       total: count ?? 0
     };
   }

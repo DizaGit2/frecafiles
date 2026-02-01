@@ -50,7 +50,15 @@
 - Fixed auth lock issue by disabling Navigator lock in supabase client.
 
 ## TODO
-- Review UI polish for dark theme consistency across all pages.
-- Add explicit cleanup for older E2E test artifacts in Supabase (optional).
-- Verify file upload end-to-end in production storage bucket with signed URL expiration.
-- Add client-side tests for the invite acceptance screen (optional).
+- [x] Review UI polish for dark theme consistency across all pages.
+- [x] Add explicit cleanup for older E2E test artifacts in Supabase.
+- [ ] Verify file upload end-to-end in production storage bucket with signed URL expiration.
+- [x] Add client-side tests for the invite acceptance screen.
+
+## Recent Changes (UI Revamp - Glassmorphism)
+- Global styles updated with CSS custom properties for glass effects, shadows, transitions.
+- Login page: Frosted glass card with gradient glow, enhanced form styling.
+- Admin/Client views: Glass-effect headers, improved table styling, hover states.
+- Dialogs: Frosted glass backgrounds, consistent button styling.
+- New E2E cleanup script: `npm run e2e:cleanup` (or `e2e:cleanup:dry` for preview).
+- New test file: `src/app/features/auth/login.component.spec.ts`.

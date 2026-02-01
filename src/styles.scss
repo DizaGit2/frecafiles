@@ -67,30 +67,96 @@ $freca-theme: mat.m2-define-dark-theme((
 
 @include mat.all-component-themes($freca-theme);
 
+// ============================================
+// CSS Custom Properties - Design Tokens
+// ============================================
 :root {
+  // Brand colors
   --freca-gold: #f2b544;
+  --freca-gold-light: #f8d078;
+  --freca-gold-dark: #d9a030;
   --freca-amber: #d9822b;
+  --freca-amber-light: #e69a4a;
   --freca-charcoal: #0b0b0b;
   --freca-graphite: #151515;
   --freca-ash: #b6aca2;
   --freca-mist: #1a1a1a;
+  --freca-cream: #f2ece4;
+  --freca-white: #fef7ec;
+
+  // Glass effects
+  --glass-bg: rgba(21, 21, 21, 0.75);
+  --glass-bg-light: rgba(30, 30, 30, 0.65);
+  --glass-bg-dark: rgba(11, 11, 11, 0.85);
+  --glass-border: rgba(242, 181, 68, 0.12);
+  --glass-border-hover: rgba(242, 181, 68, 0.25);
+  --glass-blur: blur(16px);
+  --glass-blur-strong: blur(24px);
+
+  // Surfaces
+  --surface-0: #0b0b0b;
+  --surface-1: rgba(21, 21, 21, 0.8);
+  --surface-2: rgba(30, 30, 30, 0.7);
+  --surface-3: rgba(40, 40, 40, 0.6);
+  --surface-elevated: rgba(45, 45, 45, 0.5);
+
+  // Shadows
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 30px rgba(242, 181, 68, 0.15);
+  --shadow-glow-strong: 0 0 50px rgba(242, 181, 68, 0.25);
+
+  // Legacy (for backward compatibility)
   --freca-card: #151515;
-  --freca-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  --freca-shadow: var(--shadow-xl);
+
+  // Transitions
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  // Border radius
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  // Spacing
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
 }
 
+// ============================================
+// Global Resets & Base Styles
+// ============================================
 html, body {
   height: 100%;
 }
 
 body.freca-body {
   margin: 0;
-  background: radial-gradient(circle at top left, rgba(242, 181, 68, 0.2), transparent 45%),
-    radial-gradient(circle at 20% 20%, rgba(217, 130, 43, 0.15), transparent 50%),
-    linear-gradient(180deg, #0b0b0b 0%, #121212 45%, #1a1a1a 100%);
-  color: #f2ece4;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 10%, rgba(242, 181, 68, 0.12), transparent 50%),
+    radial-gradient(ellipse 60% 40% at 90% 90%, rgba(217, 130, 43, 0.08), transparent 50%),
+    radial-gradient(ellipse 100% 80% at 50% 0%, rgba(30, 30, 30, 0.5), transparent 60%),
+    linear-gradient(180deg, #0a0a0a 0%, #0d0d0d 30%, #111111 60%, #0f0f0f 100%);
+  background-attachment: fixed;
+  color: var(--freca-cream);
   font-family: 'Newsreader', 'Garamond', 'Georgia', serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+// ============================================
+// Layout Components
+// ============================================
 .freca-shell {
   min-height: 100vh;
   display: flex;
@@ -98,50 +164,196 @@ body.freca-body {
 }
 
 .freca-toolbar {
-  background: linear-gradient(120deg, #0b0b0b 0%, #151515 55%, #0f0f0f 100%);
-  color: #fef7ec;
-  border-bottom: 3px solid var(--freca-gold);
+  background: var(--glass-bg-dark);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  color: var(--freca-white);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow:
+    0 1px 0 rgba(242, 181, 68, 0.3),
+    var(--shadow-md);
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      var(--freca-gold) 20%,
+      var(--freca-gold) 80%,
+      transparent 100%
+    );
+  }
 }
 
 .freca-toolbar .mat-mdc-button {
-  color: #fef7ec;
+  color: var(--freca-white);
+  transition: all var(--transition-fast);
+
+  &:hover {
+    background: rgba(242, 181, 68, 0.1);
+  }
 }
 
 .freca-main {
   flex: 1;
-  padding: 32px 24px 48px;
+  padding: var(--space-xl) var(--space-lg) var(--space-2xl);
 }
 
+// ============================================
+// Glass Card Component
+// ============================================
 .freca-card {
-  background: var(--freca-card);
-  border: 1px solid #2a2a2a;
-  border-radius: 18px;
-  box-shadow: var(--freca-shadow);
-  padding: 24px;
-  color: #f2ece4;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  padding: var(--space-lg);
+  color: var(--freca-cream);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.08) 50%,
+      transparent 100%
+    );
+  }
+
+  &:hover {
+    border-color: var(--glass-border-hover);
+    box-shadow:
+      var(--shadow-xl),
+      var(--shadow-glow),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
 }
 
+// Elevated variant for dialogs and modals
+.freca-card--elevated {
+  background: var(--glass-bg-light);
+  box-shadow:
+    var(--shadow-xl),
+    var(--shadow-glow);
+}
+
+// ============================================
+// Typography
+// ============================================
 .freca-section-title {
   font-family: 'Cinzel', 'Times New Roman', serif;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #fef7ec;
+  color: var(--freca-white);
+  font-weight: 600;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+.freca-muted {
+  color: var(--freca-ash);
+}
+
+// ============================================
+// Table Styles
+// ============================================
 .freca-table {
   width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+
+  th {
+    background: var(--surface-2);
+    backdrop-filter: var(--glass-blur);
+    font-family: 'Cinzel', 'Times New Roman', serif;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--freca-gold);
+    padding: var(--space-md);
+    text-align: left;
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  td {
+    padding: var(--space-md);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    transition: background var(--transition-fast);
+  }
+
+  tr:hover td {
+    background: rgba(242, 181, 68, 0.04);
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
 }
 
+// ============================================
+// Actions & Buttons
+// ============================================
 .freca-actions {
   display: flex;
-  gap: 12px;
+  gap: var(--space-md);
   flex-wrap: wrap;
 }
 
+// Enhanced Material buttons
+.mat-mdc-raised-button,
+.mat-mdc-flat-button {
+  transition: all var(--transition-fast) !important;
+  border-radius: var(--radius-sm) !important;
+  font-family: 'Newsreader', serif !important;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+
+  &.mat-primary {
+    box-shadow: 0 4px 14px rgba(242, 181, 68, 0.3) !important;
+
+    &:hover {
+      box-shadow: 0 6px 20px rgba(242, 181, 68, 0.4) !important;
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+.mat-mdc-icon-button {
+  transition: all var(--transition-fast) !important;
+
+  &:hover {
+    background: rgba(242, 181, 68, 0.1) !important;
+  }
+}
+
+// ============================================
+// Form Styles
+// ============================================
 .freca-form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
+  gap: var(--space-md);
   align-items: end;
 }
 
@@ -153,14 +365,43 @@ body.freca-body {
   width: 100%;
 }
 
-.freca-form-grid button {
-  height: 56px;
+.freca-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-md);
 }
 
+// Enhanced form fields
+.mat-mdc-form-field {
+  &.mat-mdc-form-field-appearance-outline {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: rgba(255, 255, 255, 0.12) !important;
+      transition: border-color var(--transition-fast);
+    }
+
+    &:hover .mdc-notched-outline__leading,
+    &:hover .mdc-notched-outline__notch,
+    &:hover .mdc-notched-outline__trailing {
+      border-color: rgba(242, 181, 68, 0.3) !important;
+    }
+
+    &.mat-focused .mdc-notched-outline__leading,
+    &.mat-focused .mdc-notched-outline__notch,
+    &.mat-focused .mdc-notched-outline__trailing {
+      border-color: var(--freca-gold) !important;
+    }
+  }
+}
+
+// ============================================
+// Logo & Branding
+// ============================================
 .freca-logo {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-md);
   font-family: 'Cinzel', 'Times New Roman', serif;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -170,27 +411,232 @@ body.freca-body {
   width: 40px;
   height: 40px;
   object-fit: contain;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
 }
 
-.freca-muted {
-  color: var(--freca-ash);
-}
-
+// ============================================
+// Badge & Tags
+// ============================================
 .freca-badge {
-  background: rgba(242, 181, 68, 0.18);
-  border: 1px solid rgba(242, 181, 68, 0.45);
-  color: #fef7ec;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 12px;
+  background: rgba(242, 181, 68, 0.12);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(242, 181, 68, 0.25);
+  color: var(--freca-gold-light);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: all var(--transition-fast);
+
+  &:hover {
+    background: rgba(242, 181, 68, 0.18);
+    border-color: rgba(242, 181, 68, 0.4);
+  }
 }
 
+// ============================================
+// Dialog Overrides
+// ============================================
+.mat-mdc-dialog-container {
+  --mdc-dialog-container-shape: var(--radius-lg) !important;
+
+  .mdc-dialog__surface {
+    background: var(--glass-bg) !important;
+    backdrop-filter: var(--glass-blur-strong) !important;
+    -webkit-backdrop-filter: var(--glass-blur-strong) !important;
+    border: 1px solid var(--glass-border) !important;
+    box-shadow: var(--shadow-xl), var(--shadow-glow) !important;
+  }
+}
+
+.mat-mdc-dialog-title {
+  font-family: 'Cinzel', 'Times New Roman', serif !important;
+  letter-spacing: 0.04em;
+  color: var(--freca-white) !important;
+}
+
+.mat-mdc-dialog-actions {
+  padding: var(--space-md) var(--space-lg) var(--space-lg) !important;
+  gap: var(--space-sm);
+}
+
+// ============================================
+// Snackbar Overrides
+// ============================================
+.mat-mdc-snack-bar-container {
+  // MDC Snackbar design tokens
+  --mdc-snackbar-container-shape: var(--radius-md);
+  --mdc-snackbar-container-color: var(--glass-bg);
+  --mdc-snackbar-supporting-text-color: var(--freca-cream);
+
+  // Action button token
+  --mat-snack-bar-button-color: var(--freca-gold);
+
+  .mdc-snackbar__surface {
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+  }
+}
+
+// ============================================
+// Form Field Overrides (Error & Hint Colors)
+// ============================================
+.mat-mdc-form-field {
+  // Error text colors - light red for visibility on dark bg
+  --mdc-filled-text-field-error-label-text-color: #ff8a80;
+  --mdc-outlined-text-field-error-label-text-color: #ff8a80;
+  --mdc-filled-text-field-error-supporting-text-color: #ff8a80;
+  --mdc-outlined-text-field-error-supporting-text-color: #ff8a80;
+
+  // Hint/supporting text colors
+  --mdc-filled-text-field-supporting-text-color: var(--freca-ash);
+  --mdc-outlined-text-field-supporting-text-color: var(--freca-ash);
+}
+
+// ============================================
+// Autocomplete Panel Overrides
+// ============================================
+.mat-mdc-autocomplete-panel {
+  --mat-autocomplete-background-color: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+}
+
+// ============================================
+// Option/List Item Overrides (for autocomplete & select)
+// ============================================
+.mat-mdc-option {
+  --mat-option-label-text-color: var(--freca-cream);
+  --mat-option-hover-state-layer-color: rgba(242, 181, 68, 0.08);
+  --mat-option-selected-state-layer-color: rgba(242, 181, 68, 0.12);
+
+  &.mdc-list-item--disabled {
+    --mat-option-label-text-color: var(--freca-ash);
+  }
+}
+
+// ============================================
+// Select Panel Overrides
+// ============================================
+.mat-mdc-select-panel {
+  --mat-select-panel-background-color: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+}
+
+// ============================================
+// Utility Classes
+// ============================================
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-light {
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+}
+
+.glow {
+  box-shadow: var(--shadow-glow);
+}
+
+.glow-strong {
+  box-shadow: var(--shadow-glow-strong);
+}
+
+// ============================================
+// Animations
+// ============================================
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(242, 181, 68, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(242, 181, 68, 0.25);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn var(--transition-normal) ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp var(--transition-slow) ease-out;
+}
+
+// ============================================
+// Scrollbar Styling
+// ============================================
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(242, 181, 68, 0.2);
+  border-radius: var(--radius-full);
+  transition: background var(--transition-fast);
+
+  &:hover {
+    background: rgba(242, 181, 68, 0.35);
+  }
+}
+
+// ============================================
+// Responsive Adjustments
+// ============================================
 @media (max-width: 720px) {
   .freca-main {
-    padding: 20px 16px 32px;
+    padding: var(--space-lg) var(--space-md) var(--space-xl);
   }
 
   .freca-card {
-    padding: 18px;
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+  }
+
+  .freca-section-title {
+    font-size: 1.1rem;
+  }
+}
+
+// Reduce motion for accessibility
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

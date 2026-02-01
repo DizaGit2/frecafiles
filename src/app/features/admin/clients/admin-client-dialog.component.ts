@@ -37,15 +37,43 @@ export interface AdminClientDialogData {
       </button>
     </mat-dialog-actions>
   `,
-  styles: [
-    `
-      .dialog-form {
-        display: grid;
-        gap: 16px;
-        margin-top: 8px;
+  styles: [`
+    :host {
+      display: block;
+    }
+
+    .dialog-form {
+      display: grid;
+      gap: var(--space-lg);
+      margin-top: var(--space-md);
+    }
+
+    mat-form-field {
+      width: 100%;
+    }
+
+    ::ng-deep .mat-mdc-dialog-title {
+      font-family: 'Cinzel', serif;
+      letter-spacing: 0.04em;
+      color: var(--freca-white);
+    }
+
+    ::ng-deep .mat-mdc-dialog-actions {
+      padding-top: var(--space-md);
+      gap: var(--space-sm);
+    }
+
+    ::ng-deep .mat-mdc-dialog-actions button[mat-stroked-button] {
+      border-color: rgba(255, 255, 255, 0.15);
+      color: var(--freca-ash);
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: rgba(255, 255, 255, 0.25);
+        background: rgba(255, 255, 255, 0.05);
       }
-    `
-  ]
+    }
+  `]
 })
 export class AdminClientDialogComponent {
   loading = false;

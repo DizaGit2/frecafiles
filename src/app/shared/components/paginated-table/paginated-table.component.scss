@@ -1,9 +1,155 @@
-﻿.freca-table-wrapper {
+// ============================================
+// Table Wrapper
+// ============================================
+.freca-table-wrapper {
   width: 100%;
-  overflow: auto;
-  margin-top: 8px;
+  overflow-x: auto;
+  overflow-y: visible;
+  margin-top: var(--space-sm);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(242, 181, 68, 0.2) transparent;
+
+  // Smooth scrolling
+  scroll-behavior: smooth;
+
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(242, 181, 68, 0.2);
+    border-radius: var(--radius-full);
+
+    &:hover {
+      background: rgba(242, 181, 68, 0.35);
+    }
+  }
 }
 
+// ============================================
+// Table Styles
+// ============================================
 .freca-table {
   min-width: 640px;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+// ============================================
+// Header Styles
+// ============================================
+:host ::ng-deep {
+  .mat-mdc-header-row {
+    background: var(--surface-2);
+    backdrop-filter: var(--glass-blur);
+  }
+
+  .mat-mdc-header-cell {
+    font-family: 'Cinzel', serif;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    color: var(--freca-gold);
+    font-weight: 600;
+    border-bottom: 1px solid var(--glass-border);
+    padding: var(--space-md);
+    white-space: nowrap;
+  }
+
+  // ============================================
+  // Row Styles
+  // ============================================
+  .mat-mdc-row {
+    transition: background var(--transition-fast);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+
+    &:hover {
+      background: rgba(242, 181, 68, 0.04);
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .mat-mdc-cell {
+    color: var(--freca-cream);
+    border-bottom: none;
+    padding: var(--space-md);
+    vertical-align: middle;
+  }
+
+  // ============================================
+  // Progress Bar
+  // ============================================
+  .mat-mdc-progress-bar {
+    height: 2px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+
+    .mdc-linear-progress__bar-inner {
+      border-color: var(--freca-gold);
+    }
+
+    .mdc-linear-progress__buffer-bar {
+      background-color: rgba(242, 181, 68, 0.1);
+    }
+  }
+
+  // ============================================
+  // Paginator
+  // ============================================
+  .mat-mdc-paginator {
+    background: transparent;
+    color: var(--freca-cream);
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    margin-top: var(--space-sm);
+    padding-top: var(--space-sm);
+  }
+
+  .mat-mdc-paginator-container {
+    min-height: 48px;
+    padding: 0 var(--space-sm);
+  }
+
+  .mat-mdc-paginator-page-size-label,
+  .mat-mdc-paginator-range-label {
+    color: var(--freca-ash);
+    font-size: 0.875rem;
+  }
+
+  .mat-mdc-paginator-navigation-previous,
+  .mat-mdc-paginator-navigation-next,
+  .mat-mdc-paginator-navigation-first,
+  .mat-mdc-paginator-navigation-last {
+    color: var(--freca-gold);
+
+    &:hover:not([disabled]) {
+      background: rgba(242, 181, 68, 0.1);
+    }
+
+    &[disabled] {
+      color: rgba(182, 172, 162, 0.3);
+    }
+  }
+
+  .mat-mdc-select-value {
+    color: var(--freca-cream);
+  }
+}
+
+// ============================================
+// Empty State (when table has no data)
+// ============================================
+.empty-state-row {
+  td {
+    text-align: center;
+    padding: var(--space-2xl) var(--space-lg);
+    color: var(--freca-ash);
+  }
 }

@@ -1,14 +1,246 @@
-﻿.header-row {
+// ============================================
+// Page Container Animation
+// ============================================
+:host {
+  display: block;
+  animation: fadeIn 0.4s ease-out;
+}
+
+// ============================================
+// Header Section
+// ============================================
+.header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
+.header-row h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+
+  mat-icon {
+    color: var(--freca-gold);
+    opacity: 0.8;
+  }
+}
+
+// ============================================
+// Welcome Message / Client Info
+// ============================================
+.welcome-section {
+  background: var(--surface-1);
+  backdrop-filter: var(--glass-blur);
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(242, 181, 68, 0.1);
+  margin-bottom: var(--space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+
+  mat-icon {
+    color: var(--freca-gold);
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+
+  .welcome-text {
+    h3 {
+      margin: 0 0 var(--space-xs);
+      color: var(--freca-white);
+      font-size: 1rem;
+    }
+
+    p {
+      margin: 0;
+      color: var(--freca-ash);
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// ============================================
+// Filter Section
+// ============================================
+.freca-form-grid {
+  background: var(--surface-1);
+  backdrop-filter: var(--glass-blur);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  margin-bottom: var(--space-lg);
+}
+
+// ============================================
+// Table Container
+// ============================================
+.freca-card {
+  overflow: hidden;
+
+  .mat-mdc-header-row {
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .mat-mdc-header-cell {
+    font-family: 'Cinzel', serif;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: var(--freca-gold);
+    font-weight: 600;
+  }
+
+  .mat-mdc-row {
+    transition: background var(--transition-fast);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+
+    &:hover {
+      background: rgba(242, 181, 68, 0.04);
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .mat-mdc-cell {
+    color: var(--freca-cream);
+    border-bottom: none;
+  }
+}
+
+// ============================================
+// File Name Column
+// ============================================
+.file-name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-weight: 500;
+
+  mat-icon {
+    color: var(--freca-gold);
+    opacity: 0.7;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+// ============================================
+// Action Buttons
+// ============================================
+.freca-actions {
+  display: flex;
+  gap: var(--space-sm);
+
+  .mat-mdc-icon-button {
+    transition: all var(--transition-fast);
+    border-radius: var(--radius-sm);
+
+    &:hover {
+      transform: scale(1.05);
+    }
+
+    mat-icon {
+      font-size: 20px;
+    }
+  }
+
+  // Preview button
+  .preview-btn {
+    color: #64b5f6;
+
+    &:hover {
+      background: rgba(33, 150, 243, 0.12);
+    }
+  }
+
+  // Download button
+  .download-btn {
+    color: #81c784;
+
+    &:hover {
+      background: rgba(76, 175, 80, 0.12);
+    }
+  }
+}
+
+// ============================================
+// Date/Time Styling
+// ============================================
+.date-cell {
+  color: var(--freca-ash);
+  font-size: 0.875rem;
+}
+
+// ============================================
+// File Count Badge
+// ============================================
+.file-count {
+  background: rgba(242, 181, 68, 0.12);
+  border: 1px solid rgba(242, 181, 68, 0.25);
+  color: var(--freca-gold-light);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+// ============================================
+// Empty State
+// ============================================
+.empty-state {
+  text-align: center;
+  padding: var(--space-2xl) var(--space-lg);
+  color: var(--freca-ash);
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    opacity: 0.4;
+    margin-bottom: var(--space-lg);
+    color: var(--freca-gold);
+  }
+
+  h3 {
+    margin: 0 0 var(--space-sm);
+    color: var(--freca-cream);
+    font-size: 1.25rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}
+
+// ============================================
+// Responsive
+// ============================================
 @media (max-width: 720px) {
   .header-row {
     flex-direction: column;
     align-items: flex-start;
+    gap: var(--space-md);
+  }
+
+  .welcome-section {
+    padding: var(--space-md);
+  }
+
+  .freca-form-grid {
+    padding: var(--space-sm);
   }
 }

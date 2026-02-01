@@ -1,15 +1,101 @@
+// ============================================
+// Layout Utilities
+// ============================================
 .spacer {
   flex: 1;
 }
 
+// ============================================
+// Navigation
+// ============================================
 .freca-nav {
   display: flex;
-  gap: 8px;
-  margin-left: 16px;
+  gap: var(--space-sm);
+  margin-left: var(--space-lg);
   flex-wrap: wrap;
+
+  a {
+    transition: all var(--transition-fast);
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(242, 181, 68, 0.05) 0%,
+        transparent 100%
+      );
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+    }
+
+    &:hover {
+      background: rgba(242, 181, 68, 0.08);
+      border-color: rgba(242, 181, 68, 0.15);
+
+      &::before {
+        opacity: 1;
+      }
+    }
+
+    &.active {
+      background: rgba(242, 181, 68, 0.12);
+      border: 1px solid rgba(242, 181, 68, 0.35);
+      color: var(--freca-gold-light);
+      font-weight: 500;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60%;
+        height: 2px;
+        background: var(--freca-gold);
+        border-radius: var(--radius-full);
+      }
+    }
+  }
 }
 
-.freca-nav a.active {
-  background: rgba(242, 181, 68, 0.18);
-  border: 1px solid rgba(242, 181, 68, 0.45);
+// ============================================
+// User Menu Button
+// ============================================
+:host ::ng-deep {
+  .mat-mdc-menu-panel {
+    background: var(--glass-bg) !important;
+    backdrop-filter: var(--glass-blur) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--shadow-lg) !important;
+  }
+
+  .mat-mdc-menu-item {
+    color: var(--freca-cream);
+    transition: background var(--transition-fast);
+
+    &:hover {
+      background: rgba(242, 181, 68, 0.08);
+    }
+
+    .mat-icon {
+      color: var(--freca-gold);
+    }
+  }
+}
+
+// ============================================
+// Responsive
+// ============================================
+@media (max-width: 720px) {
+  .freca-nav {
+    margin-left: var(--space-sm);
+    gap: var(--space-xs);
+  }
 }
