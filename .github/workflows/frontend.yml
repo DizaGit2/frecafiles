@@ -1,0 +1,59 @@
+name: Frontend Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate environment files
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          mkdir -p src/environments
+          INVITE_FUNCTION_URL="${SUPABASE_URL%/}/functions/v1/invite-client"
+          cat > src/environments/environment.ts <<EOF
+          export const environment = {
+            production: false,
+            supabaseUrl: '${SUPABASE_URL}',
+            supabaseAnonKey: '${SUPABASE_ANON_KEY}',
+            inviteFunctionUrl: '${INVITE_FUNCTION_URL}'
+          };
+          EOF
+          cat > src/environments/environment.prod.ts <<EOF
+          export const environment = {
+            production: true,
+            supabaseUrl: '${SUPABASE_URL}',
+            supabaseAnonKey: '${SUPABASE_ANON_KEY}',
+            inviteFunctionUrl: '${INVITE_FUNCTION_URL}'
+          };
+          EOF
+
+      - name: Build (production)
+        run: npm run build -- --configuration=production
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: freca-files-dist
+          path: dist/freca-files-prod
+          retention-days: 14
