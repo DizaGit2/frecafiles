@@ -7,15 +7,19 @@
 - Auth flow:
   - Admin lands on `/admin/clientes`, client on `/client/archivos`.
   - Invite flow handled by Supabase Edge Function `invite-client` and an in-app invite acceptance screen.
+  - Password recovery: `/reset-password` route consumes Supabase recovery token and prompts for new password. "Olvide mi contrasena" link on login screen requests the email.
 - Storage:
   - Private bucket; signed URLs are generated for preview/download.
   - Max upload size defined in `src/app/core/constants/app.constants.ts`.
 - Port: dev server runs on `http://localhost:4300`.
+- Production: deployed to GitHub Pages at `https://dizagit2.github.io/frecafiles/` via GitHub Actions on push to `main`.
 
 ## Key Paths
 - App entry: `src/main.ts`, `src/app/app.config.ts`, `src/app/app.routes.ts`.
 - Supabase client: `src/app/core/services/supabase.client.ts`.
 - Auth service: `src/app/core/services/auth.service.ts`.
+- Login + password recovery request: `src/app/features/auth/login.component.ts`.
+- Password recovery landing screen: `src/app/features/auth/reset-password.component.ts`.
 - Profiles service: `src/app/core/services/profile.service.ts`.
 - Files service: `src/app/core/services/file.service.ts`.
 - Admin clients UI: `src/app/features/admin/clients/admin-clients.component.ts`.
@@ -54,6 +58,46 @@
 - [x] Add explicit cleanup for older E2E test artifacts in Supabase.
 - [ ] Verify file upload end-to-end in production storage bucket with signed URL expiration.
 - [x] Add client-side tests for the invite acceptance screen.
+- [x] Set up CI/CD: build + deploy frontend to GitHub Pages on push to `main`.
+- [x] Implement password recovery flow.
+- [ ] Add Playwright E2E coverage for the password recovery flow.
+
+---
+
+## Deployment - GitHub Pages
+
+### Workflow
+`.github/workflows/frontend.yml` — runs on push/PR to `main` and manual `workflow_dispatch`.
+
+**Build job** (always):
+1. Checkout, Node 20, `npm ci`
+2. Generate `src/environments/environment.ts` and `environment.prod.ts` from secrets (the files are gitignored)
+3. `npm run build -- --configuration=production --base-href=/frecafiles/`
+4. Copy `index.html` → `404.html` for SPA route fallback (Pages serves `404.html` on unknown paths; Angular router then handles the URL)
+5. Upload `dist/freca-files-prod` as Pages artifact
+
+**Deploy job** (push to main only, skipped for PRs):
+- `actions/deploy-pages@v4` publishes to `https://dizagit2.github.io/frecafiles/`
+
+### Required secrets (repo Settings → Secrets and variables → Actions)
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+
+`INVITE_FUNCTION_URL` is derived in the workflow as `${SUPABASE_URL%/}/functions/v1/invite-client`.
+
+### One-time repo settings
+- **Settings → Pages → Source**: must be set to **"GitHub Actions"** (not the legacy "Deploy from branch").
+- Workflow needs `permissions: { contents: read, pages: write, id-token: write }` (already in the file).
+
+### Supabase URL configuration (Authentication → URL Configuration)
+- **Site URL**: `https://dizagit2.github.io/frecafiles/`
+- **Redirect URLs** (allow-list): include `https://dizagit2.github.io/frecafiles/reset-password` and `http://localhost:4300/reset-password` for dev.
+- Without these, Supabase recovery / invite emails will be rejected or land on the wrong host.
+
+### SPA routing under `/frecafiles/` base
+- Angular built with `--base-href=/frecafiles/` so asset URLs resolve under the Pages subpath.
+- For deep-link refreshes (e.g. `/frecafiles/admin/clientes`), `404.html` is a copy of `index.html` so the SPA bootstraps and the router takes over.
+- In code, **never hardcode a redirect URL** — use `Location.prepareExternalUrl('/path')` so it works in dev (`/path`) and prod (`/frecafiles/path`).
 
 ---
 
@@ -183,3 +227,28 @@ Required font: Material Icons (in `index.html`)
 - `src/app/features/admin/files/admin-files.component.ts` - Category column in table
 - `src/app/features/client/files/client-files.component.ts` - Full rewrite: sidebar + card grid
 - `src/app/features/client/files/client-files.component.scss` - Full rewrite: glassmorphism cards
+
+### CI/CD + GitHub Pages Deployment
+1. **Workflow** - `.github/workflows/frontend.yml` builds and deploys frontend on push to `main` (PRs build only, no deploy)
+2. **Lockfile sync** - Regenerated `package-lock.json` so `npm ci` finds `ts-node` + transitives
+3. **Env materialization in CI** - Workflow writes `src/environments/{environment,environment.prod}.ts` from `SUPABASE_URL` / `SUPABASE_ANON_KEY` secrets; `INVITE_FUNCTION_URL` is derived
+4. **Base-href** - Production build uses `--base-href=/frecafiles/` for the Pages subpath
+5. **SPA fallback** - `index.html` copied to `404.html` so deep-link refreshes hit Angular router instead of GitHub's 404
+6. **Pages source** - Repo Settings → Pages → Source set to "GitHub Actions"
+
+### Password Recovery Flow
+1. **Login screen** - "Olvide mi contrasena" link toggles to email-entry mode that calls `auth.resetPasswordForEmail(email, redirectTo)`
+2. **redirectTo computation** - `${window.location.origin}${Location.prepareExternalUrl('/reset-password')}` — works in dev and under the `/frecafiles/` base-href without hardcoding
+3. **Reset landing** - New `ResetPasswordComponent` parses the recovery token from URL hash (mirrors the invite-flow parser in `LoginComponent`), calls `setSession` or `exchangeCodeForSession`, prompts for new password, calls `auth.updatePassword`, navigates to home
+4. **Auth service** - Added `resetPasswordForEmail(email, redirectTo)` wrapping `supabase.auth.resetPasswordForEmail`
+
+### New Files
+- `.github/workflows/frontend.yml` - Build + deploy workflow
+- `src/app/features/auth/reset-password.component.ts` - Password recovery landing screen
+
+### Modified Files
+- `package-lock.json` - Synced with package.json (`npm ci` was failing in CI)
+- `src/app/app.routes.ts` - Added `/reset-password` route
+- `src/app/core/services/auth.service.ts` - Added `resetPasswordForEmail`
+- `src/app/features/auth/login.component.ts` - Added forgot-password mode + email form
+- `src/app/features/auth/login.component.scss` - `.forgot-link` styling for the secondary text button
