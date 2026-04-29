@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgIf } from '@angular/common';
+import { Location } from '@angular/common';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -60,21 +61,47 @@ import { SnackbarService } from '../../core/services/snackbar.service';
         </ng-container>
 
         <ng-template #loginForm>
-          <form [formGroup]="form" (ngSubmit)="submit()" class="login-form">
-            <mat-form-field appearance="outline">
-              <mat-label>Email</mat-label>
-              <input matInput formControlName="email" type="email" autocomplete="email" />
-            </mat-form-field>
+          <ng-container *ngIf="!forgotMode; else forgotTpl">
+            <form [formGroup]="form" (ngSubmit)="submit()" class="login-form">
+              <mat-form-field appearance="outline">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="email" type="email" autocomplete="email" />
+              </mat-form-field>
 
-            <mat-form-field appearance="outline">
-              <mat-label>Contrasena</mat-label>
-              <input matInput formControlName="password" type="password" autocomplete="current-password" />
-            </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Contrasena</mat-label>
+                <input matInput formControlName="password" type="password" autocomplete="current-password" />
+              </mat-form-field>
 
-            <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading">
-              {{ loading ? 'Ingresando...' : 'Ingresar' }}
-            </button>
-          </form>
+              <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading">
+                {{ loading ? 'Ingresando...' : 'Ingresar' }}
+              </button>
+
+              <button mat-button type="button" class="forgot-link" (click)="enterForgotMode()">
+                Olvide mi contrasena
+              </button>
+            </form>
+          </ng-container>
+
+          <ng-template #forgotTpl>
+            <div class="invite-copy">
+              <p class="freca-muted">Ingresa tu email y te enviaremos un enlace para restablecer tu contrasena.</p>
+            </div>
+            <form [formGroup]="forgotForm" (ngSubmit)="submitForgot()" class="login-form">
+              <mat-form-field appearance="outline">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="email" type="email" autocomplete="email" />
+              </mat-form-field>
+
+              <button mat-flat-button color="primary" type="submit" [disabled]="forgotForm.invalid || forgotSubmitting">
+                {{ forgotSubmitting ? 'Enviando...' : 'Enviar enlace' }}
+              </button>
+
+              <button mat-button type="button" class="forgot-link" (click)="forgotMode = false">
+                Volver al inicio de sesion
+              </button>
+            </form>
+          </ng-template>
         </ng-template>
       </mat-card>
     </section>
@@ -86,6 +113,8 @@ export class LoginComponent implements OnInit {
   inviteMode = false;
   inviteLoading = false;
   inviteSubmitting = false;
+  forgotMode = false;
+  forgotSubmitting = false;
 
   form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -100,7 +129,17 @@ export class LoginComponent implements OnInit {
     { validators: this.matchPasswords }
   );
 
-  constructor(private fb: FormBuilder, private auth: AuthService, private router: Router, private snackbar: SnackbarService) {}
+  forgotForm = this.fb.group({
+    email: ['', [Validators.required, Validators.email]]
+  });
+
+  constructor(
+    private fb: FormBuilder,
+    private auth: AuthService,
+    private router: Router,
+    private snackbar: SnackbarService,
+    private location: Location
+  ) {}
 
   ngOnInit(): void {
     const inviteParams = this.getInviteParams();
@@ -182,6 +221,32 @@ export class LoginComponent implements OnInit {
       this.snackbar.error(error?.message || 'No se pudo iniciar sesion.');
     } finally {
       this.loading = false;
+    }
+  }
+
+  enterForgotMode(): void {
+    const email = this.form.get('email')?.value;
+    if (email) {
+      this.forgotForm.patchValue({ email });
+    }
+    this.forgotMode = true;
+  }
+
+  async submitForgot(): Promise<void> {
+    if (this.forgotForm.invalid) {
+      return;
+    }
+    this.forgotSubmitting = true;
+    try {
+      const { email } = this.forgotForm.getRawValue();
+      const redirectTo = `${window.location.origin}${this.location.prepareExternalUrl('/reset-password')}`;
+      await this.auth.resetPasswordForEmail(email!, redirectTo);
+      this.snackbar.success('Enlace enviado. Revisa tu correo.');
+      this.forgotMode = false;
+    } catch (error: any) {
+      this.snackbar.error(error?.message || 'No se pudo enviar el enlace.');
+    } finally {
+      this.forgotSubmitting = false;
     }
   }
 

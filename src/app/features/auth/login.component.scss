@@ -150,6 +150,21 @@
     }
   }
 
+  // Secondary text link (forgot password / back to login)
+  .forgot-link {
+    align-self: center;
+    margin-top: calc(var(--space-sm) * -0.5);
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    color: var(--freca-cream);
+    opacity: 0.75;
+    transition: opacity var(--transition-fast);
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
   // Submit button styling
   button[type="submit"] {
     height: 52px;

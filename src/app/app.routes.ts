@@ -2,6 +2,7 @@
 import { AuthGuard } from './core/guards/auth.guard';
 import { RoleGuard } from './core/guards/role.guard';
 import { LoginComponent } from './features/auth/login.component';
+import { ResetPasswordComponent } from './features/auth/reset-password.component';
 import { AdminClientsComponent } from './features/admin/clients/admin-clients.component';
 import { AdminFilesComponent } from './features/admin/files/admin-files.component';
 import { AdminCategoriesComponent } from './features/admin/categories/admin-categories.component';
@@ -11,6 +12,7 @@ import { NotFoundComponent } from './shared/components/not-found/not-found.compo
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: 'login', component: LoginComponent },
+  { path: 'reset-password', component: ResetPasswordComponent },
   {
     path: 'admin',
     canActivate: [AuthGuard, RoleGuard],

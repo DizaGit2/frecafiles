@@ -91,6 +91,13 @@ export class AuthService {
     }
   }
 
+  async resetPasswordForEmail(email: string, redirectTo: string): Promise<void> {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+    if (error) {
+      throw error;
+    }
+  }
+
   async getHomeRoute(): Promise<string> {
     const profile = this.profileSubject.value;
     if (!profile) {
