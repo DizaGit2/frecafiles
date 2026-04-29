@@ -196,6 +196,10 @@ body.freca-body {
   border-bottom: 1px solid var(--freca-rule);
   box-shadow: var(--shadow-md);
   position: relative;
+
+  &[hidden] {
+    display: none !important;
+  }
 }
 
 .freca-toolbar .mat-mdc-button {
@@ -210,6 +214,11 @@ body.freca-body {
 .freca-main {
   flex: 1;
   padding: var(--space-xl) var(--space-lg) var(--space-2xl);
+}
+
+// Auth screens own their own layout (no toolbar, no main padding)
+.freca-shell--auth .freca-main {
+  padding: 0;
 }
 
 // ============================================

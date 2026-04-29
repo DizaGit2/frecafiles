@@ -27,15 +27,21 @@ import { AuthService } from './core/services/auth.service';
 })
 export class AppComponent {
   isLoginRoute = false;
+  isAuthRoute = false;
 
   constructor(public auth: AuthService, private router: Router) {
-    this.isLoginRoute = this.router.url.startsWith('/login');
+    this.updateRouteFlags(this.router.url);
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event) => {
         const navEvent = event as NavigationEnd;
-        this.isLoginRoute = navEvent.urlAfterRedirects.startsWith('/login');
+        this.updateRouteFlags(navEvent.urlAfterRedirects);
       });
+  }
+
+  private updateRouteFlags(url: string): void {
+    this.isLoginRoute = url.startsWith('/login');
+    this.isAuthRoute = this.isLoginRoute || url.startsWith('/reset-password');
   }
 
   async signOut(): Promise<void> {

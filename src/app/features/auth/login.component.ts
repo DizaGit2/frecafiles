@@ -17,14 +17,28 @@ import { SnackbarService } from '../../core/services/snackbar.service';
   template: `
     <section class="login-layout">
       <aside class="login-editorial">
-        <p class="login-editorial__eyebrow">Private Portal</p>
-        <h1 class="login-editorial__title freca-section-title">FRECA Files</h1>
-        <p class="login-editorial__lede">Transfer Pricing &amp; Tax Consulting</p>
-        <p class="login-editorial__pullquote">
-          Discrecion, precision y archivo seguro para nuestros clientes corporativos.
-        </p>
-        <div class="login-editorial__rule" aria-hidden="true"></div>
-        <p class="login-editorial__meta">FRECA &middot; Estudio Privado &middot; Mexico</p>
+        <figure class="login-editorial__crest">
+          <img src="assets/logo.jpg" alt="FRECA" />
+          <figcaption class="login-editorial__crest-caption">
+            <span class="login-editorial__crest-rule" aria-hidden="true"></span>
+            <span>Estudio Privado</span>
+            <span class="login-editorial__crest-rule" aria-hidden="true"></span>
+          </figcaption>
+        </figure>
+
+        <div class="login-editorial__body">
+          <p class="login-editorial__eyebrow">Private Portal</p>
+          <h1 class="login-editorial__title freca-section-title">FRECA Files</h1>
+          <p class="login-editorial__lede">Transfer Pricing &amp; Tax Consulting</p>
+          <p class="login-editorial__pullquote">
+            Discrecion, precision y archivo seguro para nuestros clientes corporativos.
+          </p>
+        </div>
+
+        <footer class="login-editorial__footer">
+          <div class="login-editorial__rule" aria-hidden="true"></div>
+          <p class="login-editorial__meta">FRECA &middot; Mexico</p>
+        </footer>
       </aside>
 
       <article class="login-card freca-card">

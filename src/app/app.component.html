@@ -1,10 +1,10 @@
-﻿<div class="freca-shell">
-  <mat-toolbar class="freca-toolbar">
+﻿<div class="freca-shell" [class.freca-shell--auth]="isAuthRoute">
+  <mat-toolbar class="freca-toolbar" [hidden]="isAuthRoute">
     <div class="freca-logo">
       <img src="assets/logo.jpg" alt="FRECA" />
       <span>FRECA Files</span>
     </div>
-    <ng-container *ngIf="!isLoginRoute && (auth.profile$ | async) as profile; else guest">
+    <ng-container *ngIf="(auth.profile$ | async) as profile; else guest">
       <nav class="freca-nav">
         <a
           mat-button
@@ -47,7 +47,7 @@
     </ng-container>
     <ng-template #guest>
       <span class="spacer"></span>
-      <span class="freca-muted" *ngIf="!isLoginRoute">Portal de clientes</span>
+      <span class="freca-muted">Portal de clientes</span>
     </ng-template>
   </mat-toolbar>
 
