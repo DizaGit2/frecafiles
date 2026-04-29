@@ -22,6 +22,13 @@
         </a>
         <a
           mat-button
+          routerLink="/admin/categorias"
+          routerLinkActive="active"
+          *ngIf="profile.role === 'administrator'">
+          Categorias
+        </a>
+        <a
+          mat-button
           routerLink="/client/archivos"
           routerLinkActive="active"
           *ngIf="profile.role === 'client'">

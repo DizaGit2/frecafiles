@@ -19,6 +19,8 @@ import { FileRecord } from '../../../core/models/file.model';
 import { FilePreviewDialogComponent } from '../../../shared/components/file-preview-dialog/file-preview-dialog.component';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { AddFileDialogComponent } from './add-file-dialog.component';
+import { isPreviewableFile } from '../../../shared/utils/file-icons';
+import { UNCATEGORIZED_LABEL } from '../../../core/models/category.model';
 
 @Component({
   selector: 'app-admin-files',
@@ -93,6 +95,13 @@ import { AddFileDialogComponent } from './add-file-dialog.component';
         <td mat-cell *matCellDef="let row">{{ row.name }}</td>
       </ng-container>
 
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef>Categoria</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="freca-badge">{{ row.category?.name || uncategorizedLabel }}</span>
+        </td>
+      </ng-container>
+
       <ng-container matColumnDef="clients">
         <th mat-header-cell *matHeaderCellDef>Clientes</th>
         <td mat-cell *matCellDef="let row">
@@ -123,10 +132,11 @@ import { AddFileDialogComponent } from './add-file-dialog.component';
   styleUrls: ['./admin-files.component.scss']
 })
 export class AdminFilesComponent implements OnDestroy {
-  displayedColumns = ['name', 'clients', 'actions'];
+  displayedColumns = ['name', 'category', 'clients', 'actions'];
   refresh$ = new Subject<void>();
   clientOptions: Profile[] = [];
   searchTerm = '';
+  readonly uncategorizedLabel = UNCATEGORIZED_LABEL;
 
   @ViewChild(MatAutocompleteTrigger) autocompleteTrigger?: MatAutocompleteTrigger;
   @ViewChild('clientSearchInput') clientSearchInput?: ElementRef<HTMLInputElement>;
@@ -282,7 +292,6 @@ export class AdminFilesComponent implements OnDestroy {
   }
 
   isPreviewable(file: FileRecord): boolean {
-    const ext = file.name.split('.').pop()?.toLowerCase();
-    return ['pdf', 'png', 'jpg', 'jpeg', 'webp', 'txt'].includes(ext || '');
+    return isPreviewableFile(file.name);
   }
 }

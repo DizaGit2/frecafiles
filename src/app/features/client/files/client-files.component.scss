@@ -7,192 +7,318 @@
 }
 
 // ============================================
-// Header Section
+// Layout: Sidebar + Main
 // ============================================
-.header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.files-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
   gap: var(--space-lg);
+  min-height: calc(100vh - 120px);
+}
+
+// ============================================
+// Sidebar
+// ============================================
+.files-sidebar {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  position: sticky;
+  top: var(--space-lg);
+  height: fit-content;
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+}
+
+.sidebar-header {
   margin-bottom: var(--space-lg);
   padding-bottom: var(--space-md);
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+  h2 {
+    margin-bottom: var(--space-xs);
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.875rem;
+  }
 }
 
-.header-row h2 {
+// ============================================
+// Category Navigation
+// ============================================
+.category-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.category-item {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-
-  mat-icon {
-    color: var(--freca-gold);
-    opacity: 0.8;
-  }
-}
-
-// ============================================
-// Welcome Message / Client Info
-// ============================================
-.welcome-section {
-  background: var(--surface-1);
-  backdrop-filter: var(--glass-blur);
-  padding: var(--space-md) var(--space-lg);
+  padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-md);
-  border: 1px solid rgba(242, 181, 68, 0.1);
-  margin-bottom: var(--space-lg);
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--freca-cream);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: 'Newsreader', serif;
+  font-size: 0.95rem;
+  width: 100%;
+  text-align: left;
 
   mat-icon {
-    color: var(--freca-gold);
-    font-size: 28px;
-    width: 28px;
-    height: 28px;
-  }
-
-  .welcome-text {
-    h3 {
-      margin: 0 0 var(--space-xs);
-      color: var(--freca-white);
-      font-size: 1rem;
-    }
-
-    p {
-      margin: 0;
-      color: var(--freca-ash);
-      font-size: 0.875rem;
-    }
-  }
-}
-
-// ============================================
-// Filter Section
-// ============================================
-.freca-form-grid {
-  background: var(--surface-1);
-  backdrop-filter: var(--glass-blur);
-  padding: var(--space-md);
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  margin-bottom: var(--space-lg);
-}
-
-// ============================================
-// Table Container
-// ============================================
-.freca-card {
-  overflow: hidden;
-
-  .mat-mdc-header-row {
-    background: var(--surface-2);
-    border-bottom: 1px solid var(--glass-border);
-  }
-
-  .mat-mdc-header-cell {
-    font-family: 'Cinzel', serif;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-    color: var(--freca-gold);
-    font-weight: 600;
-  }
-
-  .mat-mdc-row {
-    transition: background var(--transition-fast);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-
-    &:hover {
-      background: rgba(242, 181, 68, 0.04);
-    }
-
-    &:last-child {
-      border-bottom: none;
-    }
-  }
-
-  .mat-mdc-cell {
-    color: var(--freca-cream);
-    border-bottom: none;
-  }
-}
-
-// ============================================
-// File Name Column
-// ============================================
-.file-name {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  font-weight: 500;
-
-  mat-icon {
-    color: var(--freca-gold);
-    opacity: 0.7;
+    color: var(--freca-ash);
     font-size: 20px;
     width: 20px;
     height: 20px;
+    transition: color var(--transition-fast);
+  }
+
+  .category-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .category-count {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--freca-ash);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    min-width: 24px;
+    text-align: center;
+  }
+
+  &:hover {
+    background: rgba(242, 181, 68, 0.06);
+    border-color: rgba(242, 181, 68, 0.1);
+
+    mat-icon {
+      color: var(--freca-gold);
+    }
+  }
+
+  &.active {
+    background: rgba(242, 181, 68, 0.12);
+    border-color: rgba(242, 181, 68, 0.3);
+    color: var(--freca-gold-light);
+
+    mat-icon {
+      color: var(--freca-gold);
+    }
+
+    .category-count {
+      background: rgba(242, 181, 68, 0.2);
+      color: var(--freca-gold-light);
+    }
   }
 }
 
 // ============================================
-// Action Buttons
+// Main Content Area
 // ============================================
-.freca-actions {
+.files-main {
+  min-width: 0;
+}
+
+.main-header {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+  gap: var(--space-md);
+  flex-wrap: wrap;
+
+  h3 {
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.04em;
+    color: var(--freca-white);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+}
+
+.header-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.file-count {
+  font-size: 0.75rem;
+}
+
+.search-bar {
+  mat-form-field {
+    width: 280px;
+  }
+}
+
+// ============================================
+// Card Grid
+// ============================================
+.files-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-lg);
+}
+
+// ============================================
+// File Card (Glassmorphism)
+// ============================================
+.file-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(242, 181, 68, 0.2) 50%,
+      transparent 100%
+    );
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: rgba(242, 181, 68, 0.3);
+    box-shadow:
+      var(--shadow-xl),
+      var(--shadow-glow),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+    &::before {
+      opacity: 1;
+    }
+
+    .card-thumbnail {
+      background: rgba(242, 181, 68, 0.08);
+
+      mat-icon {
+        transform: scale(1.1);
+      }
+    }
+  }
+}
+
+.card-thumbnail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl) var(--space-lg);
+  background: rgba(0, 0, 0, 0.2);
+  position: relative;
+  transition: background var(--transition-normal);
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    transition: transform var(--transition-normal);
+  }
+}
+
+.file-type-badge {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: white;
+  opacity: 0.9;
+}
+
+.card-body {
+  padding: var(--space-md);
+  flex: 1;
+}
+
+.card-title {
+  margin: 0 0 var(--space-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--freca-cream);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   gap: var(--space-sm);
+
+  .card-category {
+    font-size: 0.75rem;
+    color: var(--freca-gold);
+    opacity: 0.8;
+  }
+
+  .card-date {
+    font-size: 0.75rem;
+    color: var(--freca-ash);
+  }
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
 
   .mat-mdc-icon-button {
     transition: all var(--transition-fast);
     border-radius: var(--radius-sm);
 
     &:hover {
+      background: rgba(242, 181, 68, 0.12);
       transform: scale(1.05);
     }
 
     mat-icon {
-      font-size: 20px;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
     }
   }
-
-  // Preview button
-  .preview-btn {
-    color: #64b5f6;
-
-    &:hover {
-      background: rgba(33, 150, 243, 0.12);
-    }
-  }
-
-  // Download button
-  .download-btn {
-    color: #81c784;
-
-    &:hover {
-      background: rgba(76, 175, 80, 0.12);
-    }
-  }
-}
-
-// ============================================
-// Date/Time Styling
-// ============================================
-.date-cell {
-  color: var(--freca-ash);
-  font-size: 0.875rem;
-}
-
-// ============================================
-// File Count Badge
-// ============================================
-.file-count {
-  background: rgba(242, 181, 68, 0.12);
-  border: 1px solid rgba(242, 181, 68, 0.25);
-  color: var(--freca-gold-light);
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: 500;
 }
 
 // ============================================
@@ -200,7 +326,7 @@
 // ============================================
 .empty-state {
   text-align: center;
-  padding: var(--space-2xl) var(--space-lg);
+  padding: var(--space-2xl);
   color: var(--freca-ash);
 
   mat-icon {
@@ -208,39 +334,94 @@
     width: 64px;
     height: 64px;
     opacity: 0.4;
-    margin-bottom: var(--space-lg);
     color: var(--freca-gold);
+    margin-bottom: var(--space-lg);
   }
 
   h3 {
     margin: 0 0 var(--space-sm);
     color: var(--freca-cream);
-    font-size: 1.25rem;
-  }
-
-  p {
-    margin: 0;
-    font-size: 1rem;
-    max-width: 400px;
-    margin: 0 auto;
   }
 }
 
 // ============================================
-// Responsive
+// Responsive: Sidebar becomes horizontal nav
 // ============================================
-@media (max-width: 720px) {
-  .header-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-md);
+@media (max-width: 900px) {
+  .files-layout {
+    grid-template-columns: 1fr;
   }
 
-  .welcome-section {
+  .files-sidebar {
+    position: static;
+    max-height: none;
     padding: var(--space-md);
   }
 
-  .freca-form-grid {
-    padding: var(--space-sm);
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+    padding-bottom: var(--space-sm);
+
+    h2 {
+      margin-bottom: 0;
+      font-size: 1rem;
+    }
+
+    p {
+      display: none;
+    }
+  }
+
+  .category-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: var(--space-sm);
+    padding-bottom: var(--space-xs);
+
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .category-item {
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: var(--space-xs) var(--space-md);
+    font-size: 0.85rem;
+
+    mat-icon {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .files-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: var(--space-md);
+  }
+
+  .main-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .search-bar mat-form-field {
+    width: 100%;
+  }
+
+  .card-thumbnail {
+    padding: var(--space-lg) var(--space-md);
+
+    mat-icon {
+      font-size: 36px;
+      width: 36px;
+      height: 36px;
+    }
   }
 }

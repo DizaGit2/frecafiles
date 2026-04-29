@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { NgIf } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
+import { getFileExtension } from '../../utils/file-icons';
 
 export interface FilePreviewData {
   name: string;
@@ -114,7 +115,7 @@ export class FilePreviewDialogComponent {
   }
 
   private resolvePreviewType(filename: string): 'image' | 'pdf' | 'text' | 'unsupported' {
-    const ext = filename.split('.').pop()?.toLowerCase();
+    const ext = getFileExtension(filename);
     if (!ext) {
       return 'unsupported';
     }

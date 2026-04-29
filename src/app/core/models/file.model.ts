@@ -1,3 +1,5 @@
+import { Category } from './category.model';
+
 export interface FileClient {
   full_name: string;
   email: string;
@@ -10,6 +12,8 @@ export interface FileRecord {
   storage_path: string;
   created_by: string;
   created_at: string;
+  category_id?: string | null;
+  category?: Pick<Category, 'id' | 'name'> | null;
   clients?: FileClient[];
 }
 

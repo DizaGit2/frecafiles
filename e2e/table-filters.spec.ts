@@ -95,6 +95,10 @@ test.describe('table filters', () => {
       await page.getByRole('link', { name: 'Archivos' }).click();
       await page.waitForURL('**/admin/archivos');
 
+      // Wait for files page to fully render before interacting
+      await expect(page.getByRole('heading', { name: 'Consultar archivos' })).toBeVisible();
+      await expect(page.getByRole('columnheader', { name: 'Archivo' })).toBeVisible();
+
       await page.getByLabel('Nombre').fill(fileName);
 
       // Use the new chip-based client filter
@@ -119,9 +123,8 @@ test.describe('table filters', () => {
       await page.getByRole('button', { name: 'Buscar' }).click();
       await expect(page.getByRole('cell', { name: fileName })).toBeVisible();
 
-      // Verify no "Sin clientes" rows appear when filtering by client
-      const sinClientesCount = await page.locator('.freca-muted:has-text("Sin clientes")').count();
-      expect(sinClientesCount).toBe(0);
+      // Verify no "Sin clientes" rows appear when filtering by client (auto-retry for DOM settling)
+      await expect(page.locator('.freca-muted:has-text("Sin clientes")')).toHaveCount(0);
     } finally {
       if (fileId) {
         await supabase.from('file_clients').delete().eq('file_id', fileId);
@@ -216,20 +219,21 @@ test.describe('table filters', () => {
       await page.getByRole('button', { name: 'Ingresar' }).click();
 
       await page.waitForURL('**/admin/clientes');
-      await page.getByRole('link', { name: 'Archivos' }).click();
-      await page.waitForURL('**/admin/archivos');
+
+      // Navigate directly to avoid intermittent SPA routing issues
+      await page.goto(`${baseUrl}/admin/archivos`);
+      await expect(page.getByRole('heading', { name: 'Consultar archivos' })).toBeVisible();
 
       // Select client in filter
       const clientInput = page.locator('input[placeholder="Buscar..."]');
+      await clientInput.click();
       await clientInput.fill(clientName);
-      await page.waitForTimeout(500);
 
       const clientOption = page.getByRole('option', { name: new RegExp(clientName, 'i') });
-      await expect(clientOption).toBeVisible();
+      await expect(clientOption).toBeVisible({ timeout: 15000 });
       await clientOption.click();
 
       await page.getByRole('button', { name: 'Buscar' }).click();
-      await page.waitForTimeout(500);
 
       // File WITH client should be visible
       await expect(page.getByRole('cell', { name: fileWithClient })).toBeVisible();

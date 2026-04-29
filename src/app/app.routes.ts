@@ -4,6 +4,7 @@ import { RoleGuard } from './core/guards/role.guard';
 import { LoginComponent } from './features/auth/login.component';
 import { AdminClientsComponent } from './features/admin/clients/admin-clients.component';
 import { AdminFilesComponent } from './features/admin/files/admin-files.component';
+import { AdminCategoriesComponent } from './features/admin/categories/admin-categories.component';
 import { ClientFilesComponent } from './features/client/files/client-files.component';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 
@@ -17,6 +18,7 @@ export const routes: Routes = [
     children: [
       { path: 'clientes', component: AdminClientsComponent },
       { path: 'archivos', component: AdminFilesComponent },
+      { path: 'categorias', component: AdminCategoriesComponent },
       { path: '', pathMatch: 'full', redirectTo: 'clientes' }
     ]
   },

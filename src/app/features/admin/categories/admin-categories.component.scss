@@ -1,0 +1,136 @@
+// ============================================
+// Page Container Animation
+// ============================================
+:host {
+  display: block;
+  animation: fadeIn 0.4s ease-out;
+}
+
+// ============================================
+// Header Section
+// ============================================
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.header-row h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+
+  mat-icon {
+    color: var(--freca-gold);
+    opacity: 0.8;
+  }
+}
+
+.header-row button {
+  &.mat-primary {
+    box-shadow:
+      0 4px 14px rgba(242, 181, 68, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+    &:hover {
+      box-shadow:
+        0 6px 20px rgba(242, 181, 68, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+  }
+}
+
+// ============================================
+// Filter Section Enhancement
+// ============================================
+.freca-form-grid {
+  background: var(--surface-1);
+  backdrop-filter: var(--glass-blur);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  margin-bottom: var(--space-lg);
+}
+
+// ============================================
+// Table Container
+// ============================================
+.freca-card {
+  overflow: hidden;
+
+  .mat-mdc-header-row {
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .mat-mdc-header-cell {
+    font-family: 'Cinzel', serif;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: var(--freca-gold);
+    font-weight: 600;
+  }
+
+  .mat-mdc-row {
+    transition: background var(--transition-fast);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+
+    &:hover {
+      background: rgba(242, 181, 68, 0.04);
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .mat-mdc-cell {
+    color: var(--freca-cream);
+    border-bottom: none;
+  }
+}
+
+// ============================================
+// Action Buttons in Table
+// ============================================
+.freca-actions {
+  .mat-mdc-icon-button {
+    transition: all var(--transition-fast);
+    border-radius: var(--radius-sm);
+
+    &:hover {
+      background: rgba(242, 181, 68, 0.12);
+      transform: scale(1.05);
+    }
+
+    &[color="primary"] mat-icon {
+      color: var(--freca-gold);
+    }
+
+    &[color="warn"] {
+      &:hover {
+        background: rgba(244, 67, 54, 0.12);
+      }
+    }
+  }
+}
+
+// ============================================
+// Responsive
+// ============================================
+@media (max-width: 720px) {
+  .header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+  }
+
+  .freca-form-grid {
+    padding: var(--space-sm);
+  }
+}

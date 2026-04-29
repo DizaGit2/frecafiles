@@ -7,6 +7,7 @@ import { MAX_FILE_SIZE_BYTES, SIGNED_URL_EXPIRY_SECONDS, STORAGE_BUCKET } from '
 export interface FileFilters {
   name?: string;
   clientIds?: string[];
+  categoryId?: string | null;
 }
 
 @Injectable({
@@ -16,8 +17,8 @@ export class FileService {
   async listFiles(filters: FileFilters, pageIndex: number, pageSize: number): Promise<PageResult<FileRecord>> {
     // Use INNER join when filtering by clients to exclude files without matching clients
     const selectQuery = filters.clientIds?.length
-      ? '*, file_clients!inner(client_user_id, profiles(full_name, email))'
-      : '*, file_clients(client_user_id, profiles(full_name, email))';
+      ? '*, categories(id, name), file_clients!inner(client_user_id, profiles(full_name, email))'
+      : '*, categories(id, name), file_clients(client_user_id, profiles(full_name, email))';
 
     let query = supabase
       .from('files')
@@ -29,6 +30,9 @@ export class FileService {
     if (filters.clientIds?.length) {
       query = query.in('file_clients.client_user_id', filters.clientIds);
     }
+    if (filters.categoryId) {
+      query = query.eq('category_id', filters.categoryId);
+    }
 
     const from = pageIndex * pageSize;
     const to = from + pageSize - 1;
@@ -38,15 +42,8 @@ export class FileService {
       throw error;
     }
 
-    // Transform data to include clients array
-    const files = (data || []).map((file: any) => ({
-      ...file,
-      clients: file.file_clients?.map((fc: any) => fc.profiles).filter(Boolean) || [],
-      file_clients: undefined
-    }));
-
     return {
-      data: files as FileRecord[],
+      data: (data || []).map((row: any) => this.mapFileRow(row)),
       total: count ?? 0
     };
   }
@@ -54,11 +51,14 @@ export class FileService {
   async listFilesForClient(clientUserId: string, filters: FileFilters, pageIndex: number, pageSize: number): Promise<PageResult<FileRecord>> {
     let query = supabase
       .from('files')
-      .select('*, file_clients!inner(client_user_id)', { count: 'exact' })
+      .select('*, categories(id, name), file_clients!inner(client_user_id)', { count: 'exact' })
       .eq('file_clients.client_user_id', clientUserId);
 
     if (filters.name) {
       query = query.ilike('name', `%${filters.name}%`);
+    }
+    if (filters.categoryId) {
+      query = query.eq('category_id', filters.categoryId);
     }
 
     const from = pageIndex * pageSize;
@@ -70,12 +70,21 @@ export class FileService {
     }
 
     return {
-      data: (data || []) as FileRecord[],
+      data: (data || []).map((row: any) => this.mapFileRow(row)),
       total: count ?? 0
     };
   }
 
-  async uploadFile(file: File, displayName: string, clientIds: string[], createdBy: string): Promise<void> {
+  private mapFileRow(row: any): FileRecord {
+    const { categories, file_clients, ...rest } = row;
+    return {
+      ...rest,
+      category: categories ?? null,
+      clients: file_clients?.map((fc: any) => fc.profiles).filter(Boolean) ?? []
+    };
+  }
+
+  async uploadFile(file: File, displayName: string, clientIds: string[], createdBy: string, categoryId: string): Promise<void> {
     if (file.size > MAX_FILE_SIZE_BYTES) {
       throw new Error('El archivo supera el tamano maximo permitido.');
     }
@@ -97,7 +106,8 @@ export class FileService {
       name: displayName,
       file_url: publicUrl,
       storage_path: storagePath,
-      created_by: createdBy
+      created_by: createdBy,
+      category_id: categoryId
     });
 
     if (insertError) {

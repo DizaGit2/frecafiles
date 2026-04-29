@@ -7,12 +7,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatSelectModule } from '@angular/material/select';
 import { catchError, debounceTime, distinctUntilChanged, from, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { Profile } from '../../../core/models/profile.model';
 import { ProfileService } from '../../../core/services/profile.service';
 import { FileService } from '../../../core/services/file.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { SnackbarService } from '../../../core/services/snackbar.service';
+import { CategoryService } from '../../../core/services/category.service';
+import { Category } from '../../../core/models/category.model';
 import { MAX_FILE_SIZE_MB, MAX_FILE_SIZE_BYTES } from '../../../core/constants/app.constants';
 
 @Component({
@@ -26,7 +29,8 @@ import { MAX_FILE_SIZE_MB, MAX_FILE_SIZE_BYTES } from '../../../core/constants/a
     MatFormFieldModule,
     MatInputModule,
     MatAutocompleteModule,
-    MatChipsModule
+    MatChipsModule,
+    MatSelectModule
   ],
   template: `
     <h2 mat-dialog-title>Agregar archivo</h2>
@@ -44,6 +48,15 @@ import { MAX_FILE_SIZE_MB, MAX_FILE_SIZE_BYTES } from '../../../core/constants/a
         <mat-form-field appearance="outline">
           <mat-label>Nombre</mat-label>
           <input matInput formControlName="name" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Categoria</mat-label>
+          <mat-select formControlName="categoryId">
+            <mat-option *ngFor="let cat of categories" [value]="cat.id">
+              {{ cat.name }}
+            </mat-option>
+          </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -161,6 +174,7 @@ import { MAX_FILE_SIZE_MB, MAX_FILE_SIZE_BYTES } from '../../../core/constants/a
 export class AddFileDialogComponent implements OnDestroy {
   selectedFile: File | null = null;
   clientOptions: Profile[] = [];
+  categories: Category[] = [];
   loading = false;
   maxFileSizeMb = MAX_FILE_SIZE_MB;
   searchTerm = '';
@@ -175,6 +189,7 @@ export class AddFileDialogComponent implements OnDestroy {
 
   form = this.fb.group({
     name: ['', [Validators.required, Validators.maxLength(160)]],
+    categoryId: ['', [Validators.required]],
     clientIds: [([] as string[]), [Validators.required]]
   });
 
@@ -182,11 +197,17 @@ export class AddFileDialogComponent implements OnDestroy {
     private fb: FormBuilder,
     private profileService: ProfileService,
     private fileService: FileService,
+    private categoryService: CategoryService,
     private auth: AuthService,
     private snackbar: SnackbarService,
     private dialogRef: MatDialogRef<AddFileDialogComponent>,
     private cdr: ChangeDetectorRef
   ) {
+    this.categoryService.listCategories().then((cats) => {
+      this.categories = cats;
+      this.cdr.detectChanges();
+    });
+
     this.searchInput$
       .pipe(
         debounceTime(300),
@@ -300,8 +321,8 @@ export class AddFileDialogComponent implements OnDestroy {
 
     this.loading = true;
     try {
-      const { name, clientIds } = this.form.getRawValue();
-      await this.fileService.uploadFile(this.selectedFile, name!, clientIds || [], userId);
+      const { name, categoryId, clientIds } = this.form.getRawValue();
+      await this.fileService.uploadFile(this.selectedFile, name!, clientIds || [], userId, categoryId!);
       this.snackbar.success('Archivo cargado correctamente.');
       this.dialogRef.close(true);
     } catch (error: any) {

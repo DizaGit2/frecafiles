@@ -21,11 +21,17 @@
 - Admin clients UI: `src/app/features/admin/clients/admin-clients.component.ts`.
 - Admin files UI: `src/app/features/admin/files/admin-files.component.ts`.
 - Add file modal (async client search): `src/app/features/admin/files/add-file-dialog.component.ts`.
+- Category service: `src/app/core/services/category.service.ts`.
+- Category model: `src/app/core/models/category.model.ts`.
+- Admin categories UI: `src/app/features/admin/categories/admin-categories.component.ts`.
+- Client files UI (card view): `src/app/features/client/files/client-files.component.ts`.
+- File type icons utility: `src/app/shared/utils/file-icons.ts`.
 - Invite edge function: `supabase/functions/invite-client/index.ts`.
 
 ## Supabase Notes
 - Schema + RLS in `supabase/schema.sql` and `supabase/storage.sql`.
 - `profiles` uses `is_active` for soft-delete; do not delete auth users or files.
+- `categories` table: admin-managed, all authenticated users can read. Files have nullable `category_id` FK (`on delete set null`).
 - Edge function requires CORS for localhost (already configured).
 
 ## E2E Tests (Playwright)
@@ -150,3 +156,30 @@ Required font: Material Icons (in `index.html`)
 - `src/app/core/services/file.service.ts` - Conditional INNER JOIN, client profiles in response
 - `src/app/core/models/file.model.ts` - Added `clients` array to `FileRecord`
 - `e2e/table-filters.spec.ts` - Updated for chip-based filter, added INNER join test
+
+### Category System & Client Card View
+1. **Dynamic categories** - Admin-managed categories with CRUD at `/admin/categorias`
+2. **Category on files** - Files have `category_id` FK; required when uploading via add-file-dialog
+3. **Category column** - Admin files table shows category badge column
+4. **Client card view** - Replaced table with sidebar (categories) + responsive card grid
+5. **File type icons** - Cards show Material Icons based on file extension (`src/app/shared/utils/file-icons.ts`)
+6. **Default category** - Existing files backfilled to "General" category
+
+### New Files
+- `src/app/core/models/category.model.ts` - Category interface
+- `src/app/core/services/category.service.ts` - Category CRUD + file count per category
+- `src/app/features/admin/categories/admin-categories.component.ts` - Category list + CRUD
+- `src/app/features/admin/categories/admin-category-dialog.component.ts` - Create/edit dialog
+- `src/app/features/admin/categories/admin-categories.component.scss` - Category page styles
+- `src/app/shared/utils/file-icons.ts` - File extension to Material Icon mapping
+
+### Modified Files
+- `supabase/schema.sql` - Added `categories` table, `category_id` FK on `files`, RLS, seed
+- `src/app/core/models/file.model.ts` - Added `category_id` and `category` to FileRecord
+- `src/app/core/services/file.service.ts` - Category joins, filters, upload param
+- `src/app/app.routes.ts` - Added `/admin/categorias` route
+- `src/app/app.component.html` - Added Categorias nav link for admins
+- `src/app/features/admin/files/add-file-dialog.component.ts` - Category dropdown (MatSelect)
+- `src/app/features/admin/files/admin-files.component.ts` - Category column in table
+- `src/app/features/client/files/client-files.component.ts` - Full rewrite: sidebar + card grid
+- `src/app/features/client/files/client-files.component.scss` - Full rewrite: glassmorphism cards
