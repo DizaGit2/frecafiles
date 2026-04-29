@@ -6,7 +6,6 @@ import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatCardModule } from '@angular/material/card';
 import { combineLatest, filter, take } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { SnackbarService } from '../../core/services/snackbar.service';
@@ -14,24 +13,32 @@ import { SnackbarService } from '../../core/services/snackbar.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [NgIf, ReactiveFormsModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatCardModule],
+  imports: [NgIf, ReactiveFormsModule, MatButtonModule, MatFormFieldModule, MatInputModule],
   template: `
     <section class="login-layout">
-      <mat-card class="freca-card login-card">
-        <div class="login-brand">
-          <img src="assets/logo.jpg" alt="FRECA" />
-          <div>
-            <h1 class="freca-section-title">FRECA Files</h1>
-            <p class="freca-muted">Transfer Pricing & Tax Consulting</p>
-          </div>
-        </div>
+      <aside class="login-editorial">
+        <p class="login-editorial__eyebrow">Private Portal</p>
+        <h1 class="login-editorial__title freca-section-title">FRECA Files</h1>
+        <p class="login-editorial__lede">Transfer Pricing &amp; Tax Consulting</p>
+        <p class="login-editorial__pullquote">
+          Discrecion, precision y archivo seguro para nuestros clientes corporativos.
+        </p>
+        <div class="login-editorial__rule" aria-hidden="true"></div>
+        <p class="login-editorial__meta">FRECA &middot; Estudio Privado &middot; Mexico</p>
+      </aside>
 
+      <article class="login-card freca-card">
         <ng-container *ngIf="inviteMode; else loginForm">
-          <div class="invite-copy">
-            <p class="freca-muted">Completa la invitacion creando tu contrasena.</p>
-          </div>
+          <header class="login-form__header">
+            <p class="login-form__eyebrow">Bienvenido</p>
+            <h2 class="login-form__title">Activa tu cuenta</h2>
+          </header>
 
-          <div class="freca-muted" *ngIf="inviteLoading">Validando invitacion...</div>
+          <p class="login-form__lede" *ngIf="!inviteLoading">
+            Completa la invitacion creando tu contrasena.
+          </p>
+
+          <p class="login-form__loading" *ngIf="inviteLoading">Validando invitacion...</p>
 
           <form *ngIf="!inviteLoading" [formGroup]="inviteForm" (ngSubmit)="submitInvite()" class="login-form">
             <mat-form-field appearance="outline">
@@ -62,6 +69,11 @@ import { SnackbarService } from '../../core/services/snackbar.service';
 
         <ng-template #loginForm>
           <ng-container *ngIf="!forgotMode; else forgotTpl">
+            <header class="login-form__header">
+              <p class="login-form__eyebrow">Acceso</p>
+              <h2 class="login-form__title">Inicia sesion</h2>
+            </header>
+
             <form [formGroup]="form" (ngSubmit)="submit()" class="login-form">
               <mat-form-field appearance="outline">
                 <mat-label>Email</mat-label>
@@ -76,17 +88,25 @@ import { SnackbarService } from '../../core/services/snackbar.service';
               <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading">
                 {{ loading ? 'Ingresando...' : 'Ingresar' }}
               </button>
+            </form>
 
+            <div class="login-form__footer">
               <button mat-button type="button" class="forgot-link" (click)="enterForgotMode()">
                 Olvide mi contrasena
               </button>
-            </form>
+            </div>
           </ng-container>
 
           <ng-template #forgotTpl>
-            <div class="invite-copy">
-              <p class="freca-muted">Ingresa tu email y te enviaremos un enlace para restablecer tu contrasena.</p>
-            </div>
+            <header class="login-form__header">
+              <p class="login-form__eyebrow">Recuperacion</p>
+              <h2 class="login-form__title">Restablece tu acceso</h2>
+            </header>
+
+            <p class="login-form__lede">
+              Ingresa tu email y te enviaremos un enlace para restablecer tu contrasena.
+            </p>
+
             <form [formGroup]="forgotForm" (ngSubmit)="submitForgot()" class="login-form">
               <mat-form-field appearance="outline">
                 <mat-label>Email</mat-label>
@@ -96,14 +116,16 @@ import { SnackbarService } from '../../core/services/snackbar.service';
               <button mat-flat-button color="primary" type="submit" [disabled]="forgotForm.invalid || forgotSubmitting">
                 {{ forgotSubmitting ? 'Enviando...' : 'Enviar enlace' }}
               </button>
+            </form>
 
+            <div class="login-form__footer">
               <button mat-button type="button" class="forgot-link" (click)="forgotMode = false">
                 Volver al inicio de sesion
               </button>
-            </form>
+            </div>
           </ng-template>
         </ng-template>
-      </mat-card>
+      </article>
     </section>
   `,
   styleUrls: ['./login.component.scss']

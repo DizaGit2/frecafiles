@@ -1,165 +1,78 @@
-// ============================================
-// Page Container Animation
-// ============================================
 :host {
   display: block;
-  animation: fadeIn 0.4s ease-out;
 }
 
-// ============================================
-// Header Section
-// ============================================
-.header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--space-lg);
-  margin-bottom: var(--space-lg);
-  padding-bottom: var(--space-md);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+// Filter card — flat paper, snug padding
+.filter-card {
+  padding: var(--space-md) var(--space-lg);
 }
 
-.header-row h2 {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-
-  // Optional icon styling
-  mat-icon {
-    color: var(--freca-gold);
-    opacity: 0.8;
-  }
-}
-
-.header-row button {
-  // Add button - make it stand out
-  &.mat-primary {
-    box-shadow:
-      0 4px 14px rgba(242, 181, 68, 0.25),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-
-    &:hover {
-      box-shadow:
-        0 6px 20px rgba(242, 181, 68, 0.35),
-        inset 0 1px 0 rgba(255, 255, 255, 0.15);
-    }
-  }
-}
-
-// ============================================
-// Filter Section Enhancement
-// ============================================
 .freca-form-grid {
-  background: var(--surface-1);
-  backdrop-filter: var(--glass-blur);
-  padding: var(--space-md);
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  margin-bottom: var(--space-lg);
+  // Flat — no glass background; the wrapping card handles the surface
+  background: transparent;
+  padding: 0;
+  border: 0;
 }
 
-// ============================================
-// Table Container
-// ============================================
-.freca-card {
-  // Container for the table
-  overflow: hidden;
-
-  // Table header styling
-  .mat-mdc-header-row {
-    background: var(--surface-2);
-    border-bottom: 1px solid var(--glass-border);
-  }
-
-  .mat-mdc-header-cell {
-    font-family: 'Cinzel', serif;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-    color: var(--freca-gold);
-    font-weight: 600;
-  }
-
-  // Table row styling
-  .mat-mdc-row {
-    transition: background var(--transition-fast);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-
-    &:hover {
-      background: rgba(242, 181, 68, 0.04);
-    }
-
-    &:last-child {
-      border-bottom: none;
-    }
-  }
-
-  .mat-mdc-cell {
-    color: var(--freca-cream);
-    border-bottom: none;
-  }
-}
-
-// ============================================
-// Action Buttons in Table
-// ============================================
+// Action icon-buttons — gold for primary, warm danger for warn
 .freca-actions {
   .mat-mdc-icon-button {
-    transition: all var(--transition-fast);
+    transition: background var(--transition-fast), color var(--transition-fast);
     border-radius: var(--radius-sm);
 
     &:hover {
-      background: rgba(242, 181, 68, 0.12);
-      transform: scale(1.05);
+      background: rgba(242, 181, 68, 0.10);
     }
 
-    // Edit button
     &[color="primary"] mat-icon {
       color: var(--freca-gold);
     }
 
-    // Delete/warn button
     &[color="warn"] {
+      mat-icon {
+        color: var(--freca-danger);
+      }
+
       &:hover {
-        background: rgba(244, 67, 54, 0.12);
+        background: rgba(217, 122, 108, 0.12);
       }
     }
   }
 }
 
 // ============================================
-// Empty State
+// Empty State (editorial drop-cap)
 // ============================================
 .empty-state {
   text-align: center;
   padding: var(--space-2xl) var(--space-lg);
-  color: var(--freca-ash);
+  color: var(--freca-ash-strong);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
 
-  mat-icon {
-    font-size: 48px;
-    width: 48px;
-    height: 48px;
-    opacity: 0.5;
-    margin-bottom: var(--space-md);
-  }
+.empty-state__mark {
+  font-family: 'Cinzel', 'Times New Roman', serif;
+  font-size: var(--font-size-3xl);
+  color: var(--freca-gold);
+  line-height: 1;
+}
 
-  p {
-    margin: 0;
-    font-size: 1rem;
-  }
+.empty-state__copy {
+  font-family: 'Newsreader', serif;
+  font-style: italic;
+  font-size: var(--font-size-base);
+  margin: 0;
+  max-width: 32ch;
 }
 
 // ============================================
 // Responsive
 // ============================================
 @media (max-width: 720px) {
-  .header-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-md);
-  }
-
-  .freca-form-grid {
-    padding: var(--space-sm);
+  .filter-card {
+    padding: var(--space-md);
   }
 }

@@ -40,13 +40,19 @@
 
 ## E2E Tests (Playwright)
 - Config: `playwright.config.ts` (uses port 4300).
-- Tests:
+- Functional specs:
   - `e2e/login.spec.ts`
   - `e2e/admin.spec.ts`
   - `e2e/client.spec.ts`
   - `e2e/invite.spec.ts`
   - `e2e/add-file-modal.spec.ts` (async client select)
   - `e2e/table-filters.spec.ts` (filters + tables + INNER join verification)
+- Redesign-shell specs (added in editorial-luxury redesign):
+  - `e2e/redesign-shell.spec.ts` — login eyebrow + Cinzel title; admin pages have a single `.freca-page__header` with one bottom border; inline `.freca-card` has `backdrop-filter: none`; dialog `.mdc-dialog__surface` keeps glass.
+  - `e2e/redesign-icons.spec.ts` — file-card icon colors must resolve to one of four palette tones; admin preview/download hover background must be gold (no Material blue/green).
+  - `e2e/redesign-empty-states.spec.ts` — admin categories with no matches shows a Cinzel `—` drop-cap + italic copy.
+  - `e2e/redesign-dialogs.spec.ts` — submit `.btn-spinner` is visible while `loading` is true (gates `/rest/v1/categories` to keep the request open).
+- Run all: `npx -y dotenv-cli -e .env.local -- npx playwright test`. Default-loaded `.env` has placeholders only; without `dotenv-cli`, env-driven specs skip.
 - Cleanup added to E2E tests to delete created users/files.
 
 ## Env Files
@@ -101,30 +107,52 @@
 
 ---
 
-## UI Design - Glassmorphism Theme
+## UI Design - Editorial Luxury Theme
+
+The brand promise is heritage, exclusivity, and prestige — FRECA is a financial consultancy serving large corporations. The design committed to an "Editorial Luxury" direction (Brunello Cucinelli / J.P. Morgan Private Bank / FT Weekend feel): restraint, gold-as-punctuation, exquisite typography, hairline gold rules instead of glass borders for separation, asymmetric editorial layouts on key screens, slow refined motion. Glass is dialed back: kept only on floating overlays (dialogs, menus, autocomplete, select, snackbar), removed from inline cards in favor of flat charcoal paper surfaces with hairline borders.
 
 ### Design Tokens (CSS Custom Properties)
 Located in `src/styles.scss`:
-- **Brand colors**: `--freca-gold`, `--freca-amber`, `--freca-cream`, etc.
-- **Glass effects**: `--glass-bg`, `--glass-border`, `--glass-blur`
-- **Surfaces**: `--surface-0` through `--surface-elevated`
-- **Shadows**: `--shadow-sm` through `--shadow-xl`, `--shadow-glow`
-- **Transitions**: `--transition-fast`, `--transition-normal`, `--transition-slow`
-- **Border radius**: `--radius-sm` through `--radius-full`
-- **Spacing**: `--space-xs` through `--space-2xl`
+- **Brand colors**: `--freca-gold` (#f2b544), `--freca-gold-light`, `--freca-gold-dark`, `--freca-gold-soft` (#e8c87a — body emphasis, drop-caps, hover tints), `--freca-cream`, `--freca-white`, `--freca-charcoal`, `--freca-graphite`, `--freca-mist`, `--freca-ash` (#c9c0b5 — decorative dividers, disabled labels), `--freca-ash-strong` (#d8d0c5 — hints, metadata, supporting text — passes AA on small text), `--freca-danger` (#d97a6c — warm terracotta replaces bright red).
+- **Editorial rules**: `--freca-rule` (gold hairline at 18% opacity, used between sections), `--freca-rule-soft` (neutral hairline at 6% opacity, used for table row separators).
+- **Surfaces (flat paper)**: `--surface-paper` (#121212 — default card), `--surface-paper-raised` (#181818 — sidebar, filter card), `--surface-paper-sunken` (#0d0d0d — table header, card thumbnails, empty states).
+- **Glass effects** (overlays only): `--glass-bg`, `--glass-bg-light`, `--glass-bg-dark`, `--glass-border`, `--glass-blur`, `--glass-blur-strong`.
+- **Surfaces (translucent)**: `--surface-0` through `--surface-elevated` (still used in some legacy contexts).
+- **Shadows**: `--shadow-sm` through `--shadow-xl`, `--shadow-glow`.
+- **Transitions**: `--transition-fast`, `--transition-normal`, `--transition-slow`.
+- **Border radius**: `--radius-sm` through `--radius-full`.
+- **Spacing**: `--space-xs` through `--space-2xl`.
+- **Typography scale**: `--font-size-xs` (12px) through `--font-size-3xl` (44px); `--line-height-tight/snug/normal/relaxed`; `--tracking-tight/normal/wide/wider`.
 
 ### Key UI Classes
-- `.freca-card` - Glass-effect card with backdrop blur
-- `.freca-section-title` - Cinzel font, uppercase, gold color
-- `.freca-form-grid` - CSS Grid for form fields
-- `.freca-form-actions` - Flex container for form buttons (right-aligned)
-- `.freca-actions` - Flex container for table action buttons
-- `.freca-muted` - Muted text color (ash)
+- **Page shell**:
+  - `.freca-page` - Vertical flex container with `gap: var(--space-xl)` (32px canonical rhythm), `max-width: 1280px`, exposes `--freca-sticky-top` for nested sticky elements.
+  - `.freca-page__header` - Header row (eyebrow + title left, action button right), 1px gold hairline below.
+  - `.freca-page__heading` - Wraps eyebrow/title/subtitle vertically.
+  - `.freca-page__eyebrow` - Cinzel uppercase gold, sits above the title.
+  - `.freca-page__title` - Cinzel display title (`--font-size-2xl`).
+  - `.freca-page__subtitle` - Italic Newsreader, `--freca-ash-strong`.
+- **Card surfaces**:
+  - `.freca-card` - Flat paper card (`var(--surface-paper)` + 1px `--freca-rule-soft` border). NO glass blur. Hover bumps border to `--freca-rule`.
+  - `.freca-card--elevated` - Slight raise (`--surface-paper-raised` + `--shadow-md`).
+- **Editorial typography**:
+  - `.freca-section-title` - Cinzel uppercase, `--font-size-xl`, gold-tinted.
+  - `.freca-muted` - `--freca-ash-strong` at `--font-size-sm`.
+- **Layout helpers**:
+  - `.freca-form-grid` - CSS Grid for form fields (no background — the wrapping `.filter-card` provides the surface).
+  - `.freca-form-actions` - Flex container for form buttons (right-aligned).
+  - `.freca-actions` - Flex container for table action buttons; primary buttons get gold, warn buttons get `--freca-danger` with terracotta hover.
+- **Editorial details**:
+  - `.empty-state` / `.empty-state__mark` / `.empty-state__copy` - Centered drop-cap (Cinzel em-dash) + italic Newsreader copy. Used by `paginated-table` (default fallback) and overridable via `[emptyState]` content projection.
+  - `.btn-spinner` - 14px CSS-only ring spinner using `currentColor` borders. Renders inside submit buttons during async actions (alongside a "Guardando..." label).
+- **Login editorial column** (`login-editorial__*`): eyebrow, display title, lede, italic pull-quote with gold left-bar, hairline rule, and Cinzel meta line.
 
 ### Material Design Theming
-- Uses MDC design tokens for consistent theming
-- Snackbar, autocomplete, select, dialog all use glass-effect backgrounds
-- Error colors: Light red (`#ff8a80`) for visibility on dark backgrounds
+- Uses MDC design tokens for consistent theming.
+- Glass survives on overlays: `mat-mdc-dialog-container`, `mat-mdc-snack-bar-container`, `mat-mdc-autocomplete-panel`, `mat-mdc-select-panel`, `mat-mdc-menu-panel`. Inline `.freca-card` is opaque charcoal paper.
+- Error colors: warm terracotta `--freca-danger` (#d97a6c) — replaced the previous bright `#ff8a80` and the four duplicate `--mdc-...-error-label-text-color` declarations were consolidated to a single block.
+- Form-field hint/supporting text uses `--freca-ash-strong` (was `--freca-ash`, which failed AA on small text).
+- Toolbar uses a single 1px `--freca-rule` border-bottom (no double gold gradient + box-shadow stack).
 
 ---
 
@@ -176,6 +204,57 @@ Replace text buttons with icon buttons for cleaner UI:
 ```
 Required imports: `MatIconModule`, `MatTooltipModule`
 Required font: Material Icons (in `index.html`)
+
+### 6. Page Shell — Editorial Rhythm
+Every primary page (admin & client) wraps content in `.freca-page`. Sections inside are separated by the canonical `var(--space-xl)` (32px) gap from `.freca-page`. Components do NOT add their own `margin-bottom` for inter-section spacing — it comes from the page shell. The header pattern:
+```html
+<section class="freca-page">
+  <header class="freca-page__header">
+    <div class="freca-page__heading">
+      <p class="freca-page__eyebrow">Administracion</p>
+      <h2 class="freca-page__title">Consultar X</h2>
+      <p class="freca-page__subtitle">...optional...</p>
+    </div>
+    <button mat-flat-button color="primary">Agregar X</button>
+  </header>
+
+  <section class="freca-card filter-card">
+    <form>...</form>
+  </section>
+
+  <app-paginated-table>...</app-paginated-table>
+</section>
+```
+Existing E2E specs assert `getByRole('heading', { name: 'Consultar X' })` and `'FRECA Files'` and `'Mis archivos'` — keep those exact heading texts when restyling.
+
+### 7. Inline Submit Spinner
+Async submit buttons render a CSS-only ring spinner alongside a "Guardando..." label. Pattern (use a plain `<span>`, not `<mat-progress-spinner>` — the directive does not bind reliably inside `mat-flat-button` content):
+```html
+<button mat-flat-button color="primary" (click)="save()" [disabled]="form.invalid || loading">
+  <span class="btn-content">
+    <span *ngIf="loading" class="btn-spinner" aria-hidden="true"></span>
+    <span>{{ loading ? 'Guardando...' : 'Guardar' }}</span>
+  </span>
+</button>
+```
+The `.btn-spinner` and its `btn-spinner-rotate` keyframe are global in `src/styles.scss`. Component-level `.btn-content` styles inline-flex with an 8px gap.
+
+### 8. Editorial Empty State
+The shared paginated-table component shows a default empty state when `total === 0 && !loading`. Pages can project their own copy via `[emptyState]` content children:
+```html
+<app-paginated-table ...>
+  <ng-container matColumnDef="...">...</ng-container>
+
+  <ng-container emptyState>
+    <span aria-hidden="true" class="empty-state__mark">&mdash;</span>
+    <p class="empty-state__copy">Aun no hay categorias.</p>
+  </ng-container>
+</app-paginated-table>
+```
+Default fallback shows the same Cinzel `&mdash;` + italic "Sin resultados.".
+
+### 9. Editorial Asymmetric Login
+The login screen uses a CSS-grid asymmetric split (`minmax(0, 1.1fr) 1px minmax(0, 0.9fr)`) with a vertical hairline gold gradient between the editorial column (eyebrow + display title + italic pull-quote) and the form column. Below 900px it collapses to a single column and the rule disappears. Reset-password reuses the same SCSS file for visual continuity.
 
 ---
 
@@ -252,3 +331,39 @@ Required font: Material Icons (in `index.html`)
 - `src/app/core/services/auth.service.ts` - Added `resetPasswordForEmail`
 - `src/app/features/auth/login.component.ts` - Added forgot-password mode + email form
 - `src/app/features/auth/login.component.scss` - `.forgot-link` styling for the secondary text button
+
+### Editorial Luxury Redesign
+Aesthetic pivot from glassmorphism to editorial luxury. The premise: FRECA serves big corporate clients in financial consulting; the UI should communicate heritage and exclusivity, not look like a generic SaaS dashboard.
+
+**Design system changes**:
+1. **Token reform** — typography scale (`--font-size-xs`..`--font-size-3xl`, `--line-height-*`, `--tracking-*`), color tokens (`--freca-gold-soft`, `--freca-rule`, `--freca-rule-soft`, `--freca-danger`, `--freca-ash-strong`, `--surface-paper*`); removed unused `--freca-amber*` and legacy `--freca-card`/`--freca-shadow` aliases; consolidated four duplicate `--mdc-...-error-label-text-color` declarations.
+2. **Glass dialed back** — `.freca-card` is now flat `--surface-paper` with `--freca-rule-soft` border, no backdrop blur. Glass survives only on dialogs, menus, autocomplete, select panels, snackbars.
+3. **Page shell** — new `.freca-page` family with canonical 32px rhythm; resolves the prior 40px stacked-header issue (headers had `margin-bottom: 24px` + `padding-bottom: 16px` + a border).
+4. **Toolbar** — removed redundant gold `box-shadow` + `::after` underline gradient; single 1px hairline border-bottom.
+5. **Body background** — replaced four overlapping gradients with subtle corner vignettes + paper-grain SVG noise.
+6. **Animations** — removed `pulse-glow` keyframes; added staggered slideUp on `.freca-page > *`; new `btn-spinner-rotate` for inline submit spinners.
+
+**Component-level changes**:
+1. **Auth (login + reset-password)** — asymmetric two-column editorial layout; eyebrow "Private Portal" / "Recuperacion", Cinzel display title at `--font-size-3xl`, italic Newsreader pull-quote with gold left-bar. Vertical hairline gold rule between columns. Forgot-password link moved into a hairline-bordered footer with proper breathing room (was 8px below submit, now 16px + rule). Removed `MatCardModule` import.
+2. **Admin (clients/files/categories)** — all wrapped in `.freca-page` with the canonical header. Filter forms in flat `.freca-card.filter-card`. Action icon buttons use gold for primary, `--freca-danger` for warn (preview/download hover backgrounds switched from Material blue/green to gold).
+3. **Client files** — flat-paper sidebar with vertical hairline rule, gold left-bar on active category, file cards with editorial Cinzel labels (no colored badge backgrounds — file-type is conveyed by icon color + a small Cinzel label).
+4. **Dialogs (add-file, admin-category, admin-client)** — submit buttons render an inline `.btn-spinner` while saving. Used a CSS-only ring spinner because `<mat-progress-spinner>` did not bind reliably inside `mat-flat-button` content at runtime.
+5. **Paginated table** — Cinzel header on `--surface-paper-sunken`, `var(--font-size-sm)` cells, `--freca-rule-soft` row separators; new `[emptyState]` content projection slot with default Cinzel-em-dash fallback.
+6. **File-type icons (`src/app/shared/utils/file-icons.ts`)** — recolored 23 entries from raw Material colors (red/blue/green/purple/orange) to four palette tones via CSS vars: `--freca-gold` (PDF/DOC/CSV), `--freca-gold-soft` (XLS/PPT), `--freca-cream` (images), `--freca-ash-strong` (binary/media). Default file: `--freca-ash-strong`.
+
+**E2E coverage**: 4 new specs added (`redesign-shell`, `redesign-icons`, `redesign-empty-states`, `redesign-dialogs`). Existing 6 functional specs still pass.
+
+### New / Modified Files
+- `src/styles.scss` - Token system, page shell, flat-card, btn-spinner, empty-state, body background
+- `src/app/shared/utils/file-icons.ts` - Recolored to brand palette
+- `src/app/shared/components/paginated-table/paginated-table.component.ts` + `.scss` - Editorial header, `[emptyState]` projection, hairline separators
+- `src/app/features/auth/login.component.ts` + `.scss` - Asymmetric editorial split (full SCSS rewrite)
+- `src/app/features/auth/reset-password.component.ts` - Shares the new login SCSS
+- `src/app/features/admin/clients/admin-clients.component.ts` + `.scss` - `.freca-page` shell, gold/danger action buttons
+- `src/app/features/admin/clients/admin-client-dialog.component.ts` - Inline `.btn-spinner`
+- `src/app/features/admin/files/admin-files.component.ts` + `.scss` - Shell + `.preview-btn`/`.download-btn` classes, gold hovers
+- `src/app/features/admin/files/add-file-dialog.component.ts` - Inline `.btn-spinner`
+- `src/app/features/admin/categories/admin-categories.component.ts` + `.scss` - Shell + projected empty state
+- `src/app/features/admin/categories/admin-category-dialog.component.ts` - Inline `.btn-spinner`
+- `src/app/features/client/files/client-files.component.ts` + `.scss` - Editorial sidebar, flat-paper cards (full SCSS rewrite)
+- `e2e/redesign-shell.spec.ts`, `e2e/redesign-icons.spec.ts`, `e2e/redesign-empty-states.spec.ts`, `e2e/redesign-dialogs.spec.ts` - New redesign specs

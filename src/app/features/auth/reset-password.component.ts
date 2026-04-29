@@ -5,30 +5,37 @@ import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatCardModule } from '@angular/material/card';
 import { AuthService } from '../../core/services/auth.service';
 import { SnackbarService } from '../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [NgIf, ReactiveFormsModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatCardModule],
+  imports: [NgIf, ReactiveFormsModule, MatButtonModule, MatFormFieldModule, MatInputModule],
   template: `
     <section class="login-layout">
-      <mat-card class="freca-card login-card">
-        <div class="login-brand">
-          <img src="assets/logo.jpg" alt="FRECA" />
-          <div>
-            <h1 class="freca-section-title">FRECA Files</h1>
-            <p class="freca-muted">Restablecer contrasena</p>
-          </div>
-        </div>
+      <aside class="login-editorial">
+        <p class="login-editorial__eyebrow">Recuperacion</p>
+        <h1 class="login-editorial__title freca-section-title">FRECA Files</h1>
+        <p class="login-editorial__lede">Restablecer contrasena</p>
+        <p class="login-editorial__pullquote">
+          Tu acceso permanece privado. Define una nueva contrasena para continuar.
+        </p>
+        <div class="login-editorial__rule" aria-hidden="true"></div>
+        <p class="login-editorial__meta">FRECA &middot; Estudio Privado &middot; Mexico</p>
+      </aside>
 
-        <div class="freca-muted" *ngIf="loading">Validando enlace...</div>
+      <article class="login-card freca-card">
+        <header class="login-form__header">
+          <p class="login-form__eyebrow">Nueva contrasena</p>
+          <h2 class="login-form__title">Actualiza tu acceso</h2>
+        </header>
 
-        <div class="invite-copy" *ngIf="!loading && tokenValid">
-          <p class="freca-muted">Ingresa tu nueva contrasena para continuar.</p>
-        </div>
+        <p class="login-form__loading" *ngIf="loading">Validando enlace...</p>
+
+        <p class="login-form__lede" *ngIf="!loading && tokenValid">
+          Ingresa tu nueva contrasena para continuar.
+        </p>
 
         <form
           *ngIf="!loading && tokenValid"
@@ -59,7 +66,7 @@ import { SnackbarService } from '../../core/services/snackbar.service';
             {{ submitting ? 'Guardando...' : 'Actualizar contrasena' }}
           </button>
         </form>
-      </mat-card>
+      </article>
     </section>
   `,
   styleUrls: ['./login.component.scss']

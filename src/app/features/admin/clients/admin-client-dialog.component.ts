@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { NgIf } from '@angular/common';
 import { Profile } from '../../../core/models/profile.model';
 import { ProfileService } from '../../../core/services/profile.service';
 import { SnackbarService } from '../../../core/services/snackbar.service';
@@ -15,7 +16,7 @@ export interface AdminClientDialogData {
 @Component({
   selector: 'app-admin-client-dialog',
   standalone: true,
-  imports: [ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule],
+  imports: [NgIf, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule],
   template: `
     <h2 mat-dialog-title>{{ isEdit ? 'Editar cliente' : 'Agregar cliente' }}</h2>
     <mat-dialog-content>
@@ -33,7 +34,10 @@ export interface AdminClientDialogData {
     <mat-dialog-actions align="end">
       <button mat-stroked-button mat-dialog-close>Cancelar</button>
       <button mat-flat-button color="primary" (click)="save()" [disabled]="form.invalid || loading">
-        {{ loading ? 'Guardando...' : 'Guardar' }}
+        <span class="btn-content">
+          <span *ngIf="loading" class="btn-spinner" aria-hidden="true"></span>
+          <span>{{ loading ? 'Guardando...' : 'Guardar' }}</span>
+        </span>
       </button>
     </mat-dialog-actions>
   `,
@@ -50,6 +54,12 @@ export interface AdminClientDialogData {
 
     mat-form-field {
       width: 100%;
+    }
+
+    .btn-content {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
     }
 
     ::ng-deep .mat-mdc-dialog-title {

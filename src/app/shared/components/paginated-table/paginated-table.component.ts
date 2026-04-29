@@ -11,7 +11,7 @@ import { PageResult } from '../../../core/models/pagination.model';
   standalone: true,
   imports: [CommonModule, MatTableModule, MatPaginatorModule, MatProgressBarModule],
   template: `
-    <div class="freca-card">
+    <div class="freca-card paginated-table-card">
       <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
       <div class="freca-table-wrapper">
         <table mat-table [dataSource]="data" class="freca-table">
@@ -20,6 +20,13 @@ import { PageResult } from '../../../core/models/pagination.model';
           <tr mat-header-row *matHeaderRowDef="internalColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: internalColumns"></tr>
         </table>
+
+        <div *ngIf="!loading && total === 0" class="empty-state">
+          <ng-content select="[emptyState]">
+            <span aria-hidden="true" class="empty-state__mark">&mdash;</span>
+            <p class="empty-state__copy">Sin resultados.</p>
+          </ng-content>
+        </div>
       </div>
 
       <mat-paginator

@@ -1,18 +1,19 @@
 // ============================================
-// Table Wrapper
+// Paginated table — flat editorial paper
 // ============================================
+.paginated-table-card {
+  padding: 0;
+  overflow: hidden;
+}
+
 .freca-table-wrapper {
   width: 100%;
   overflow-x: auto;
   overflow-y: visible;
-  margin-top: var(--space-sm);
   scrollbar-width: thin;
   scrollbar-color: rgba(242, 181, 68, 0.2) transparent;
-
-  // Smooth scrolling
   scroll-behavior: smooth;
 
-  // Custom scrollbar
   &::-webkit-scrollbar {
     height: 6px;
   }
@@ -31,9 +32,6 @@
   }
 }
 
-// ============================================
-// Table Styles
-// ============================================
 .freca-table {
   min-width: 640px;
   width: 100%;
@@ -42,32 +40,28 @@
 }
 
 // ============================================
-// Header Styles
+// Header & rows — Cinzel header, hairline separators
 // ============================================
 :host ::ng-deep {
   .mat-mdc-header-row {
-    background: var(--surface-2);
-    backdrop-filter: var(--glass-blur);
+    background: var(--surface-paper-sunken);
   }
 
   .mat-mdc-header-cell {
-    font-family: 'Cinzel', serif;
+    font-family: 'Cinzel', 'Times New Roman', serif;
     text-transform: uppercase;
-    font-size: 0.72rem;
-    letter-spacing: 0.06em;
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--tracking-wider);
     color: var(--freca-gold);
     font-weight: 600;
-    border-bottom: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--freca-rule);
     padding: var(--space-md);
     white-space: nowrap;
   }
 
-  // ============================================
-  // Row Styles
-  // ============================================
   .mat-mdc-row {
     transition: background var(--transition-fast);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid var(--freca-rule-soft);
 
     &:hover {
       background: rgba(242, 181, 68, 0.04);
@@ -82,15 +76,13 @@
     color: var(--freca-cream);
     border-bottom: none;
     padding: var(--space-md);
+    font-size: var(--font-size-sm);
     vertical-align: middle;
   }
 
-  // ============================================
-  // Progress Bar
-  // ============================================
+  // Progress bar — gold linear indicator
   .mat-mdc-progress-bar {
     height: 2px;
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 
     .mdc-linear-progress__bar-inner {
       border-color: var(--freca-gold);
@@ -101,26 +93,22 @@
     }
   }
 
-  // ============================================
   // Paginator
-  // ============================================
   .mat-mdc-paginator {
     background: transparent;
     color: var(--freca-cream);
-    border-top: 1px solid rgba(255, 255, 255, 0.04);
-    margin-top: var(--space-sm);
-    padding-top: var(--space-sm);
+    border-top: 1px solid var(--freca-rule-soft);
   }
 
   .mat-mdc-paginator-container {
-    min-height: 48px;
-    padding: 0 var(--space-sm);
+    min-height: 52px;
+    padding: 0 var(--space-md);
   }
 
   .mat-mdc-paginator-page-size-label,
   .mat-mdc-paginator-range-label {
-    color: var(--freca-ash);
-    font-size: 0.875rem;
+    color: var(--freca-ash-strong);
+    font-size: var(--font-size-sm);
   }
 
   .mat-mdc-paginator-navigation-previous,
@@ -130,26 +118,15 @@
     color: var(--freca-gold);
 
     &:hover:not([disabled]) {
-      background: rgba(242, 181, 68, 0.1);
+      background: rgba(242, 181, 68, 0.10);
     }
 
     &[disabled] {
-      color: rgba(182, 172, 162, 0.3);
+      color: rgba(216, 208, 197, 0.3);
     }
   }
 
   .mat-mdc-select-value {
     color: var(--freca-cream);
-  }
-}
-
-// ============================================
-// Empty State (when table has no data)
-// ============================================
-.empty-state-row {
-  td {
-    text-align: center;
-    padding: var(--space-2xl) var(--space-lg);
-    color: var(--freca-ash);
   }
 }

@@ -29,62 +29,65 @@ import { AdminClientDialogComponent, AdminClientDialogData } from './admin-clien
     PaginatedTableComponent
   ],
   template: `
-    <section class="freca-card">
-      <div class="header-row">
-        <div>
-          <h2 class="freca-section-title">Consultar clientes</h2>
-          <p class="freca-muted">Administra usuarios activos del portal.</p>
+    <section class="freca-page">
+      <header class="freca-page__header">
+        <div class="freca-page__heading">
+          <p class="freca-page__eyebrow">Administracion</p>
+          <h2 class="freca-page__title">Consultar clientes</h2>
+          <p class="freca-page__subtitle">Administra usuarios activos del portal.</p>
         </div>
         <button mat-flat-button color="primary" (click)="openClientDialog()">
           Agregar cliente
         </button>
-      </div>
+      </header>
 
-      <form [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
-        <div class="freca-form-grid">
-          <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>Nombre</mat-label>
-            <input matInput formControlName="name" />
-          </mat-form-field>
-          <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>Email</mat-label>
-            <input matInput formControlName="email" />
-          </mat-form-field>
-        </div>
-        <div class="freca-form-actions">
-          <button mat-stroked-button color="primary" type="submit">Buscar</button>
-        </div>
-      </form>
-    </section>
-
-    <app-paginated-table
-      [displayedColumns]="displayedColumns"
-      [fetchPage]="fetchPage"
-      [refresh$]="refresh$">
-      <ng-container matColumnDef="full_name">
-        <th mat-header-cell *matHeaderCellDef>Nombre</th>
-        <td mat-cell *matCellDef="let row">{{ row.full_name }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef>Email</th>
-        <td mat-cell *matCellDef="let row">{{ row.email }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Acciones</th>
-        <td mat-cell *matCellDef="let row">
-          <div class="freca-actions">
-            <button mat-icon-button color="primary" (click)="openClientDialog(row)" matTooltip="Editar">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button color="warn" (click)="confirmDelete(row)" matTooltip="Eliminar">
-              <mat-icon>delete</mat-icon>
-            </button>
+      <section class="freca-card filter-card">
+        <form [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
+          <div class="freca-form-grid">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="name" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Email</mat-label>
+              <input matInput formControlName="email" />
+            </mat-form-field>
           </div>
-        </td>
-      </ng-container>
-    </app-paginated-table>
+          <div class="freca-form-actions">
+            <button mat-stroked-button color="primary" type="submit">Buscar</button>
+          </div>
+        </form>
+      </section>
+
+      <app-paginated-table
+        [displayedColumns]="displayedColumns"
+        [fetchPage]="fetchPage"
+        [refresh$]="refresh$">
+        <ng-container matColumnDef="full_name">
+          <th mat-header-cell *matHeaderCellDef>Nombre</th>
+          <td mat-cell *matCellDef="let row">{{ row.full_name }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let row">{{ row.email }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let row">
+            <div class="freca-actions">
+              <button mat-icon-button color="primary" (click)="openClientDialog(row)" matTooltip="Editar">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="confirmDelete(row)" matTooltip="Eliminar">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+      </app-paginated-table>
+    </section>
   `,
   styleUrls: ['./admin-clients.component.scss']
 })

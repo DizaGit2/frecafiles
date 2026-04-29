@@ -30,58 +30,66 @@ import { PageResult } from '../../../core/models/pagination.model';
     PaginatedTableComponent
   ],
   template: `
-    <section class="freca-card">
-      <div class="header-row">
-        <div>
-          <h2 class="freca-section-title">Consultar categorias</h2>
-          <p class="freca-muted">Administra las categorias de archivos.</p>
+    <section class="freca-page">
+      <header class="freca-page__header">
+        <div class="freca-page__heading">
+          <p class="freca-page__eyebrow">Administracion</p>
+          <h2 class="freca-page__title">Consultar categorias</h2>
+          <p class="freca-page__subtitle">Administra las categorias de archivos.</p>
         </div>
         <button mat-flat-button color="primary" (click)="openCategoryDialog()">
           Agregar categoria
         </button>
-      </div>
+      </header>
 
-      <form [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
-        <div class="freca-form-grid">
-          <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>Nombre</mat-label>
-            <input matInput formControlName="name" />
-          </mat-form-field>
-        </div>
-        <div class="freca-form-actions">
-          <button mat-stroked-button color="primary" type="submit">Buscar</button>
-        </div>
-      </form>
-    </section>
-
-    <app-paginated-table
-      [displayedColumns]="displayedColumns"
-      [fetchPage]="fetchPage"
-      [refresh$]="refresh$">
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Nombre</th>
-        <td mat-cell *matCellDef="let row">{{ row.name }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="display_order">
-        <th mat-header-cell *matHeaderCellDef>Orden</th>
-        <td mat-cell *matCellDef="let row">{{ row.display_order }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Acciones</th>
-        <td mat-cell *matCellDef="let row">
-          <div class="freca-actions">
-            <button mat-icon-button color="primary" (click)="openCategoryDialog(row)" matTooltip="Editar">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button color="warn" (click)="confirmDelete(row)" matTooltip="Eliminar">
-              <mat-icon>delete</mat-icon>
-            </button>
+      <section class="freca-card filter-card">
+        <form [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
+          <div class="freca-form-grid">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="name" />
+            </mat-form-field>
           </div>
-        </td>
-      </ng-container>
-    </app-paginated-table>
+          <div class="freca-form-actions">
+            <button mat-stroked-button color="primary" type="submit">Buscar</button>
+          </div>
+        </form>
+      </section>
+
+      <app-paginated-table
+        [displayedColumns]="displayedColumns"
+        [fetchPage]="fetchPage"
+        [refresh$]="refresh$">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Nombre</th>
+          <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="display_order">
+          <th mat-header-cell *matHeaderCellDef>Orden</th>
+          <td mat-cell *matCellDef="let row">{{ row.display_order }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let row">
+            <div class="freca-actions">
+              <button mat-icon-button color="primary" (click)="openCategoryDialog(row)" matTooltip="Editar">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="confirmDelete(row)" matTooltip="Eliminar">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container emptyState>
+          <span aria-hidden="true" class="empty-state__mark">&mdash;</span>
+          <p class="empty-state__copy">Aun no hay categorias.</p>
+        </ng-container>
+      </app-paginated-table>
+    </section>
   `,
   styleUrls: ['./admin-categories.component.scss']
 })

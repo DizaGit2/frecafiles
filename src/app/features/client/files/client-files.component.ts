@@ -36,94 +36,94 @@ interface FileCard extends FileRecord {
     MatProgressBarModule
   ],
   template: `
-    <div class="files-layout">
-      <aside class="files-sidebar">
-        <div class="sidebar-header">
-          <h2 class="freca-section-title">Mis archivos</h2>
-          <p class="freca-muted">Documentos disponibles</p>
-        </div>
-
-        <nav class="category-nav">
-          <button
-            class="category-item"
-            [class.active]="selectedCategoryId === null"
-            (click)="selectCategory(null)">
-            <mat-icon>folder</mat-icon>
-            <span class="category-name">Todos los archivos</span>
-            <span class="category-count">{{ totalCategoryFileCount }}</span>
-          </button>
-
-          <button
-            *ngFor="let cat of categories; trackBy: trackById"
-            class="category-item"
-            [class.active]="selectedCategoryId === cat.id"
-            (click)="selectCategory(cat.id)">
-            <mat-icon>folder_open</mat-icon>
-            <span class="category-name">{{ cat.name }}</span>
-            <span class="category-count">{{ getCategoryFileCount(cat.id) }}</span>
-          </button>
-        </nav>
-      </aside>
-
-      <main class="files-main">
-        <div class="main-header">
-          <div class="header-info">
-            <h3>{{ selectedCategoryName }}</h3>
-            <span class="file-count freca-badge">{{ totalFiles }} archivos</span>
+    <section class="freca-page client-page">
+      <div class="files-layout">
+        <aside class="files-sidebar">
+          <div class="sidebar-header">
+            <p class="files-sidebar__eyebrow">Archivo</p>
+            <h2 class="files-sidebar__title">Mis archivos</h2>
+            <div class="files-sidebar__rule" aria-hidden="true"></div>
           </div>
-          <form [formGroup]="searchForm" (ngSubmit)="applySearch()" class="search-bar">
-            <mat-form-field appearance="outline" subscriptSizing="dynamic">
-              <mat-icon matPrefix>search</mat-icon>
-              <input matInput formControlName="name" placeholder="Buscar archivos..." />
-            </mat-form-field>
-          </form>
-        </div>
 
-        <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+          <nav class="category-nav">
+            <button
+              class="category-item"
+              [class.active]="selectedCategoryId === null"
+              (click)="selectCategory(null)">
+              <span class="category-name">Todos los archivos</span>
+              <span class="category-count">{{ totalCategoryFileCount }}</span>
+            </button>
 
-        <div class="files-grid" *ngIf="!loading && files.length > 0">
-          <div class="file-card" *ngFor="let file of files; trackBy: trackById">
-            <div class="card-thumbnail">
-              <mat-icon [style.color]="file.typeInfo.color">
-                {{ file.typeInfo.icon }}
-              </mat-icon>
-              <span class="file-type-badge" [style.background]="file.typeInfo.color">
-                {{ file.typeInfo.label }}
-              </span>
+            <button
+              *ngFor="let cat of categories; trackBy: trackById"
+              class="category-item"
+              [class.active]="selectedCategoryId === cat.id"
+              (click)="selectCategory(cat.id)">
+              <span class="category-name">{{ cat.name }}</span>
+              <span class="category-count">{{ getCategoryFileCount(cat.id) }}</span>
+            </button>
+          </nav>
+        </aside>
+
+        <main class="files-main">
+          <header class="freca-page__header main-header">
+            <div class="freca-page__heading">
+              <p class="freca-page__eyebrow">{{ selectedCategoryName }}</p>
+              <h3 class="freca-page__title">{{ totalFiles }} <span class="files-count-suffix">{{ totalFiles === 1 ? 'archivo' : 'archivos' }}</span></h3>
             </div>
-            <div class="card-body">
-              <h4 class="card-title" [matTooltip]="file.name">{{ file.name }}</h4>
-              <div class="card-meta">
-                <span class="card-category">{{ file.category?.name || uncategorizedLabel }}</span>
-                <span class="card-date">{{ file.created_at | date:'dd MMM yyyy' }}</span>
+            <form [formGroup]="searchForm" (ngSubmit)="applySearch()" class="search-bar">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-icon matPrefix>search</mat-icon>
+                <input matInput formControlName="name" placeholder="Buscar archivos..." />
+              </mat-form-field>
+            </form>
+          </header>
+
+          <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+          <div class="files-grid" *ngIf="!loading && files.length > 0">
+            <article class="file-card" *ngFor="let file of files; trackBy: trackById">
+              <div class="card-thumbnail">
+                <mat-icon [style.color]="file.typeInfo.color">
+                  {{ file.typeInfo.icon }}
+                </mat-icon>
+                <span class="file-type-badge" [style.color]="file.typeInfo.color">
+                  {{ file.typeInfo.label }}
+                </span>
               </div>
-            </div>
-            <div class="card-actions">
-              <button
-                mat-icon-button
-                (click)="previewFile(file)"
-                [disabled]="!file.previewable"
-                matTooltip="Vista previa">
-                <mat-icon>visibility</mat-icon>
-              </button>
-              <button
-                mat-icon-button
-                color="primary"
-                (click)="downloadFile(file)"
-                matTooltip="Descargar">
-                <mat-icon>download</mat-icon>
-              </button>
-            </div>
+              <div class="card-body">
+                <h4 class="card-title" [matTooltip]="file.name">{{ file.name }}</h4>
+                <div class="card-meta">
+                  <span class="card-category">{{ file.category?.name || uncategorizedLabel }}</span>
+                  <span class="card-date">{{ file.created_at | date:'dd MMM yyyy' }}</span>
+                </div>
+              </div>
+              <div class="card-actions">
+                <button
+                  mat-icon-button
+                  (click)="previewFile(file)"
+                  [disabled]="!file.previewable"
+                  matTooltip="Vista previa">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="primary"
+                  (click)="downloadFile(file)"
+                  matTooltip="Descargar">
+                  <mat-icon>download</mat-icon>
+                </button>
+              </div>
+            </article>
           </div>
-        </div>
 
-        <div class="empty-state" *ngIf="!loading && files.length === 0">
-          <mat-icon>folder_off</mat-icon>
-          <h3>Sin archivos</h3>
-          <p class="freca-muted">No se encontraron archivos en esta categoria.</p>
-        </div>
-      </main>
-    </div>
+          <div class="empty-state" *ngIf="!loading && files.length === 0">
+            <span aria-hidden="true" class="empty-state__mark">&mdash;</span>
+            <p class="empty-state__copy">No se encontraron archivos en esta categoria.</p>
+          </div>
+        </main>
+      </div>
+    </section>
   `,
   styleUrls: ['./client-files.component.scss']
 })

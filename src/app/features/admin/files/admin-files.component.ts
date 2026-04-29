@@ -39,54 +39,56 @@ import { UNCATEGORIZED_LABEL } from '../../../core/models/category.model';
     PaginatedTableComponent
   ],
   template: `
-    <section class="freca-card">
-      <div class="header-row">
-        <div>
-          <h2 class="freca-section-title">Consultar archivos</h2>
-          <p class="freca-muted">Gestiona los archivos compartidos con clientes.</p>
+    <section class="freca-page">
+      <header class="freca-page__header">
+        <div class="freca-page__heading">
+          <p class="freca-page__eyebrow">Administracion</p>
+          <h2 class="freca-page__title">Consultar archivos</h2>
+          <p class="freca-page__subtitle">Gestiona los archivos compartidos con clientes.</p>
         </div>
         <button mat-flat-button color="primary" (click)="openUploadDialog()">Agregar archivo</button>
-      </div>
+      </header>
 
-      <form [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
-        <div class="freca-form-grid">
-          <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>Nombre</mat-label>
-            <input matInput formControlName="name" />
-          </mat-form-field>
+      <section class="freca-card filter-card">
+        <form [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
+          <div class="freca-form-grid">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="name" />
+            </mat-form-field>
 
-          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="client-filter-field">
-            <mat-label>Clientes</mat-label>
-            <mat-chip-grid #clientGrid aria-label="Clientes seleccionados">
-              <mat-chip-row *ngFor="let client of selectedClientsList" (removed)="removeClient(client)">
-                {{ client.full_name }}
-                <button matChipRemove type="button" aria-label="Remover cliente">&times;</button>
-              </mat-chip-row>
-              <input
-                matInput
-                #clientSearchInput
-                [matAutocomplete]="clientAuto"
-                [matChipInputFor]="clientGrid"
-                placeholder="Buscar..."
-                (input)="onSearchInput($any($event.target).value)" />
-            </mat-chip-grid>
-            <mat-autocomplete #clientAuto="matAutocomplete" (optionSelected)="onClientSelected($event.option.value)">
-              <mat-option *ngIf="clientOptions.length === 0" disabled>
-                {{ searchTerm ? 'Sin resultados' : 'Escribe para buscar clientes' }}
-              </mat-option>
-              <mat-option *ngFor="let client of clientOptions" [value]="client">
-                {{ client.full_name }} ({{ client.email }})
-              </mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
-        </div>
-        <div class="freca-form-actions">
-          <button mat-stroked-button color="primary" type="submit">Buscar</button>
-        </div>
-      </form>
-    </section>
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="client-filter-field">
+              <mat-label>Clientes</mat-label>
+              <mat-chip-grid #clientGrid aria-label="Clientes seleccionados">
+                <mat-chip-row *ngFor="let client of selectedClientsList" (removed)="removeClient(client)">
+                  {{ client.full_name }}
+                  <button matChipRemove type="button" aria-label="Remover cliente">&times;</button>
+                </mat-chip-row>
+                <input
+                  matInput
+                  #clientSearchInput
+                  [matAutocomplete]="clientAuto"
+                  [matChipInputFor]="clientGrid"
+                  placeholder="Buscar..."
+                  (input)="onSearchInput($any($event.target).value)" />
+              </mat-chip-grid>
+              <mat-autocomplete #clientAuto="matAutocomplete" (optionSelected)="onClientSelected($event.option.value)">
+                <mat-option *ngIf="clientOptions.length === 0" disabled>
+                  {{ searchTerm ? 'Sin resultados' : 'Escribe para buscar clientes' }}
+                </mat-option>
+                <mat-option *ngFor="let client of clientOptions" [value]="client">
+                  {{ client.full_name }} ({{ client.email }})
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+          <div class="freca-form-actions">
+            <button mat-stroked-button color="primary" type="submit">Buscar</button>
+          </div>
+        </form>
+      </section>
 
-    <app-paginated-table
+      <app-paginated-table
       [displayedColumns]="displayedColumns"
       [fetchPage]="fetchPage"
       [refresh$]="refresh$">
@@ -118,16 +120,17 @@ import { UNCATEGORIZED_LABEL } from '../../../core/models/category.model';
         <th mat-header-cell *matHeaderCellDef>Acciones</th>
         <td mat-cell *matCellDef="let row">
           <div class="freca-actions">
-            <button mat-icon-button (click)="previewFile(row)" [disabled]="!isPreviewable(row)" matTooltip="Vista previa">
+            <button mat-icon-button class="preview-btn" (click)="previewFile(row)" [disabled]="!isPreviewable(row)" matTooltip="Vista previa">
               <mat-icon>visibility</mat-icon>
             </button>
-            <button mat-icon-button color="primary" (click)="downloadFile(row)" matTooltip="Descargar">
+            <button mat-icon-button class="download-btn" color="primary" (click)="downloadFile(row)" matTooltip="Descargar">
               <mat-icon>download</mat-icon>
             </button>
           </div>
         </td>
       </ng-container>
-    </app-paginated-table>
+      </app-paginated-table>
+    </section>
   `,
   styleUrls: ['./admin-files.component.scss']
 })

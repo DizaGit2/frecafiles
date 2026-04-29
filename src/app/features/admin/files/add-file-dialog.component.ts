@@ -88,7 +88,10 @@ import { MAX_FILE_SIZE_MB, MAX_FILE_SIZE_BYTES } from '../../../core/constants/a
     <mat-dialog-actions align="end">
       <button mat-stroked-button mat-dialog-close>Cancelar</button>
       <button mat-flat-button color="primary" (click)="save()" [disabled]="form.invalid || !selectedFile || loading">
-        {{ loading ? 'Guardando...' : 'Guardar' }}
+        <span class="btn-content">
+          <span *ngIf="loading" class="btn-spinner" aria-hidden="true"></span>
+          <span>{{ loading ? 'Guardando...' : 'Guardar' }}</span>
+        </span>
       </button>
     </mat-dialog-actions>
   `,
@@ -129,6 +132,12 @@ import { MAX_FILE_SIZE_MB, MAX_FILE_SIZE_BYTES } from '../../../core/constants/a
 
     mat-form-field {
       width: 100%;
+    }
+
+    .btn-content {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
     }
 
     ::ng-deep .mat-mdc-chip-grid {
