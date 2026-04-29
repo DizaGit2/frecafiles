@@ -1,4 +1,4 @@
-name: Frontend Build
+name: Frontend Build & Deploy
 
 on:
   push:
@@ -7,10 +7,18 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,11 +57,24 @@ jobs:
           EOF
 
       - name: Build (production)
-        run: npm run build -- --configuration=production
+        run: npm run build -- --configuration=production --base-href=/frecafiles/
 
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+      - name: SPA fallback (copy index.html to 404.html)
+        run: cp dist/freca-files-prod/index.html dist/freca-files-prod/404.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: freca-files-dist
           path: dist/freca-files-prod
-          retention-days: 14
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
