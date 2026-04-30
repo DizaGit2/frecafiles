@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -134,7 +134,7 @@ export class ClientFilesComponent implements OnInit {
   files: FileCard[] = [];
   totalFiles = 0;
   totalCategoryFileCount = 0;
-  loading = false;
+  loading = true;
   categoryCounts = new Map<string | null, number>();
   readonly uncategorizedLabel = UNCATEGORIZED_LABEL;
 
@@ -146,7 +146,8 @@ export class ClientFilesComponent implements OnInit {
     private categoryService: CategoryService,
     private auth: AuthService,
     private dialog: MatDialog,
-    private snackbar: SnackbarService
+    private snackbar: SnackbarService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -169,12 +170,18 @@ export class ClientFilesComponent implements OnInit {
       this.totalCategoryFileCount = total;
     } catch (error: any) {
       this.snackbar.error(error?.message || 'No se pudieron cargar las categorias.');
+    } finally {
+      this.cdr.detectChanges();
     }
   }
 
   async loadFiles(): Promise<void> {
     const userId = this.auth.getCurrentUserId();
-    if (!userId) return;
+    if (!userId) {
+      this.loading = false;
+      this.cdr.detectChanges();
+      return;
+    }
 
     this.loading = true;
     try {
@@ -193,6 +200,7 @@ export class ClientFilesComponent implements OnInit {
       this.snackbar.error(error?.message || 'No se pudieron cargar los archivos.');
     } finally {
       this.loading = false;
+      this.cdr.detectChanges();
     }
   }
 
