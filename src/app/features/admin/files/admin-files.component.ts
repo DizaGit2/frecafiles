@@ -19,6 +19,7 @@ import { FileRecord } from '../../../core/models/file.model';
 import { FilePreviewDialogComponent } from '../../../shared/components/file-preview-dialog/file-preview-dialog.component';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { AddFileDialogComponent } from './add-file-dialog.component';
+import { EditFileClientsDialogComponent } from './edit-file-clients-dialog.component';
 import { isPreviewableFile } from '../../../shared/utils/file-icons';
 import { UNCATEGORIZED_LABEL } from '../../../core/models/category.model';
 
@@ -122,6 +123,9 @@ import { UNCATEGORIZED_LABEL } from '../../../core/models/category.model';
           <div class="freca-actions">
             <button mat-icon-button class="preview-btn" (click)="previewFile(row)" [disabled]="!isPreviewable(row)" matTooltip="Vista previa">
               <mat-icon>visibility</mat-icon>
+            </button>
+            <button mat-icon-button class="edit-clients-btn" color="primary" (click)="openEditClientsDialog(row)" matTooltip="Editar clientes">
+              <mat-icon>group</mat-icon>
             </button>
             <button mat-icon-button class="download-btn" color="primary" (click)="downloadFile(row)" matTooltip="Descargar">
               <mat-icon>download</mat-icon>
@@ -262,6 +266,18 @@ export class AdminFilesComponent implements OnDestroy {
 
   openUploadDialog(): void {
     const ref = this.dialog.open(AddFileDialogComponent, { width: '640px' });
+    ref.afterClosed().subscribe((result) => {
+      if (result) {
+        this.refresh$.next();
+      }
+    });
+  }
+
+  openEditClientsDialog(file: FileRecord): void {
+    const ref = this.dialog.open(EditFileClientsDialogComponent, {
+      width: '640px',
+      data: { fileId: file.id, fileName: file.name }
+    });
     ref.afterClosed().subscribe((result) => {
       if (result) {
         this.refresh$.next();
