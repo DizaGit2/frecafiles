@@ -31,14 +31,22 @@
           mat-button
           routerLink="/client/archivos"
           routerLinkActive="active"
+          class="freca-nav__client-tab"
           *ngIf="profile.role === 'client'">
           Mis archivos
         </a>
       </nav>
       <span class="spacer"></span>
       <span class="freca-badge">{{ profile.role === 'administrator' ? 'Administrador' : 'Cliente' }}</span>
-      <button mat-button [matMenuTriggerFor]="userMenu">
+      <button mat-button [matMenuTriggerFor]="userMenu" class="freca-user-named">
         {{ profile.full_name }}
+      </button>
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="userMenu"
+        class="freca-user-avatar"
+        [attr.aria-label]="profile.full_name">
+        <span class="freca-user-avatar__initial">{{ getInitial(profile.full_name) }}</span>
       </button>
       <mat-menu #userMenu="matMenu">
         <button mat-menu-item (click)="goHome()">Inicio</button>

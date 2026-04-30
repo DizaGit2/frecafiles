@@ -10,6 +10,7 @@ export interface FileRecord {
   name: string;
   file_url: string;
   storage_path: string;
+  size_bytes?: number | null;
   created_by: string;
   created_at: string;
   category_id?: string | null;

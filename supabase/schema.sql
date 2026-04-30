@@ -23,6 +23,7 @@ create table if not exists public.files (
   name text not null,
   file_url text not null,
   storage_path text not null,
+  size_bytes bigint,
   created_by uuid references public.profiles(user_id),
   category_id uuid references public.categories(id) on delete set null,
   created_at timestamptz default now()
@@ -31,6 +32,10 @@ create table if not exists public.files (
 -- Add category_id to existing files table (no-op on fresh databases)
 alter table public.files
   add column if not exists category_id uuid references public.categories(id) on delete set null;
+
+-- Add size_bytes to existing files table (no-op on fresh databases)
+alter table public.files
+  add column if not exists size_bytes bigint;
 
 create table if not exists public.file_clients (
   file_id uuid references public.files(id) on delete cascade,

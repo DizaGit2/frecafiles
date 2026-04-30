@@ -91,11 +91,56 @@
 }
 
 // ============================================
+// User avatar (mobile)
+// ============================================
+.freca-user-avatar {
+  display: none;
+
+  .freca-user-avatar__initial {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(242, 181, 68, 0.12);
+    border: 1px solid rgba(242, 181, 68, 0.35);
+    color: var(--freca-gold);
+    font-family: 'Cinzel', 'Times New Roman', serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+  }
+}
+
+// ============================================
 // Responsive
 // ============================================
 @media (max-width: 720px) {
   .freca-nav {
     margin-left: var(--space-sm);
     gap: var(--space-xs);
+  }
+
+  // Trim toolbar chrome on phones: keep crest + avatar, drop wordmark, role
+  // badge, redundant single-route nav, and the named menu trigger.
+  :host ::ng-deep .freca-logo span {
+    display: none;
+  }
+
+  .freca-badge {
+    display: none;
+  }
+
+  .freca-nav__client-tab {
+    display: none;
+  }
+
+  .freca-user-named {
+    display: none;
+  }
+
+  .freca-user-avatar {
+    display: inline-flex;
   }
 }

@@ -107,6 +107,7 @@ export class FileService {
       name: displayName,
       file_url: publicUrl,
       storage_path: storagePath,
+      size_bytes: file.size,
       created_by: createdBy,
       category_id: categoryId
     });
@@ -192,6 +193,22 @@ export class FileService {
 
     if (error || !data?.signedUrl) {
       throw error ?? new Error('No se pudo generar el enlace firmado.');
+    }
+
+    return data.signedUrl;
+  }
+
+  async createSignedDownloadUrl(storagePath: string, downloadName: string): Promise<string> {
+    // Supabase appends ?download=<name> and serves the object with
+    // Content-Disposition: attachment; filename="<name>". Mobile browsers
+    // honor this and trigger a real download with the original filename
+    // instead of inline-rendering (the failure mode for .docx/.xlsx on iOS).
+    const { data, error } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .createSignedUrl(storagePath, SIGNED_URL_EXPIRY_SECONDS, { download: downloadName });
+
+    if (error || !data?.signedUrl) {
+      throw error ?? new Error('No se pudo generar el enlace de descarga.');
     }
 
     return data.signedUrl;

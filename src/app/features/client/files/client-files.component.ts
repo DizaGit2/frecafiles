@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,6 +8,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDialog } from '@angular/material/dialog';
+import { Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { FileService, FileFilters } from '../../../core/services/file.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -16,6 +18,7 @@ import { FileRecord } from '../../../core/models/file.model';
 import { Category, UNCATEGORIZED_LABEL } from '../../../core/models/category.model';
 import { FilePreviewDialogComponent } from '../../../shared/components/file-preview-dialog/file-preview-dialog.component';
 import { getFileTypeInfo, FileTypeInfo, isPreviewableFile } from '../../../shared/utils/file-icons';
+import { FileSizePipe } from '../../../shared/pipes/file-size.pipe';
 
 interface FileCard extends FileRecord {
   typeInfo: FileTypeInfo;
@@ -33,7 +36,8 @@ interface FileCard extends FileRecord {
     MatInputModule,
     MatIconModule,
     MatTooltipModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    FileSizePipe
   ],
   template: `
     <section class="freca-page client-page">
@@ -45,11 +49,11 @@ interface FileCard extends FileRecord {
             <div class="files-sidebar__rule" aria-hidden="true"></div>
           </div>
 
-          <nav class="category-nav">
+          <nav class="category-nav" #categoryNav>
             <button
               class="category-item"
               [class.active]="selectedCategoryId === null"
-              (click)="selectCategory(null)">
+              (click)="selectCategory(null, $event)">
               <span class="category-name">Todos los archivos</span>
               <span class="category-count">{{ totalCategoryFileCount }}</span>
             </button>
@@ -58,7 +62,7 @@ interface FileCard extends FileRecord {
               *ngFor="let cat of categories; trackBy: trackById"
               class="category-item"
               [class.active]="selectedCategoryId === cat.id"
-              (click)="selectCategory(cat.id)">
+              (click)="selectCategory(cat.id, $event)">
               <span class="category-name">{{ cat.name }}</span>
               <span class="category-count">{{ getCategoryFileCount(cat.id) }}</span>
             </button>
@@ -71,12 +75,24 @@ interface FileCard extends FileRecord {
               <p class="freca-page__eyebrow">{{ selectedCategoryName }}</p>
               <h3 class="freca-page__title">{{ totalFiles }} <span class="files-count-suffix">{{ totalFiles === 1 ? 'archivo' : 'archivos' }}</span></h3>
             </div>
-            <form [formGroup]="searchForm" (ngSubmit)="applySearch()" class="search-bar">
+            <div class="search-bar">
               <mat-form-field appearance="outline" subscriptSizing="dynamic">
                 <mat-icon matPrefix>search</mat-icon>
-                <input matInput formControlName="name" placeholder="Buscar archivos..." />
+                <input matInput [formControl]="searchControl" placeholder="Buscar archivos..." inputmode="search" autocomplete="off" />
+                <button
+                  *ngIf="searchControl.value"
+                  matSuffix
+                  mat-icon-button
+                  type="button"
+                  aria-label="Limpiar busqueda"
+                  (click)="clearSearch()">
+                  <mat-icon>close</mat-icon>
+                </button>
               </mat-form-field>
-            </form>
+              <span class="search-bar__count" *ngIf="!loading">
+                {{ totalFiles }} {{ totalFiles === 1 ? 'archivo' : 'archivos' }}
+              </span>
+            </div>
           </header>
 
           <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
@@ -95,22 +111,27 @@ interface FileCard extends FileRecord {
                 <h4 class="card-title" [matTooltip]="file.name">{{ file.name }}</h4>
                 <div class="card-meta">
                   <span class="card-category">{{ file.category?.name || uncategorizedLabel }}</span>
-                  <span class="card-date">{{ file.created_at | date:'dd MMM yyyy' }}</span>
+                  <div class="card-stats">
+                    <span class="card-size" *ngIf="file.size_bytes">{{ file.size_bytes | fileSize }}</span>
+                    <span class="card-date">{{ file.created_at | date:'dd MMM yyyy' }}</span>
+                  </div>
                 </div>
               </div>
               <div class="card-actions">
                 <button
+                  *ngIf="file.previewable"
                   mat-icon-button
                   (click)="previewFile(file)"
-                  [disabled]="!file.previewable"
-                  matTooltip="Vista previa">
+                  matTooltip="Vista previa"
+                  aria-label="Vista previa">
                   <mat-icon>visibility</mat-icon>
                 </button>
                 <button
                   mat-icon-button
                   color="primary"
                   (click)="downloadFile(file)"
-                  matTooltip="Descargar">
+                  matTooltip="Descargar"
+                  aria-label="Descargar">
                   <mat-icon>download</mat-icon>
                 </button>
               </div>
@@ -127,7 +148,9 @@ interface FileCard extends FileRecord {
   `,
   styleUrls: ['./client-files.component.scss']
 })
-export class ClientFilesComponent implements OnInit {
+export class ClientFilesComponent implements OnInit, OnDestroy {
+  @ViewChild('categoryNav') categoryNav?: ElementRef<HTMLElement>;
+
   categories: Category[] = [];
   selectedCategoryId: string | null = null;
   selectedCategoryName = 'Todos los archivos';
@@ -139,6 +162,11 @@ export class ClientFilesComponent implements OnInit {
   readonly uncategorizedLabel = UNCATEGORIZED_LABEL;
 
   searchForm = this.fb.group({ name: [''] });
+  get searchControl() {
+    return this.searchForm.controls.name;
+  }
+
+  private searchSub?: Subscription;
 
   constructor(
     private fb: FormBuilder,
@@ -151,7 +179,15 @@ export class ClientFilesComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
+    this.searchSub = this.searchControl.valueChanges
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe(() => this.loadFiles());
+
     await Promise.all([this.loadCategories(), this.loadFiles()]);
+  }
+
+  ngOnDestroy(): void {
+    this.searchSub?.unsubscribe();
   }
 
   async loadCategories(): Promise<void> {
@@ -186,7 +222,7 @@ export class ClientFilesComponent implements OnInit {
     this.loading = true;
     try {
       const filters: FileFilters = {
-        name: this.searchForm.controls.name.value || undefined,
+        name: this.searchControl.value || undefined,
         categoryId: this.selectedCategoryId ?? undefined
       };
       const result = await this.fileService.listFilesForClient(userId, filters, 0, 200);
@@ -204,16 +240,22 @@ export class ClientFilesComponent implements OnInit {
     }
   }
 
-  selectCategory(categoryId: string | null): void {
+  selectCategory(categoryId: string | null, event?: Event): void {
     this.selectedCategoryId = categoryId;
     this.selectedCategoryName = categoryId === null
       ? 'Todos los archivos'
       : this.categories.find((c) => c.id === categoryId)?.name ?? 'Archivos';
+
+    const target = event?.currentTarget as HTMLElement | undefined;
+    if (target?.scrollIntoView) {
+      target.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+    }
+
     this.loadFiles();
   }
 
-  applySearch(): void {
-    this.loadFiles();
+  clearSearch(): void {
+    this.searchControl.setValue('');
   }
 
   getCategoryFileCount(categoryId: string): number {
@@ -228,10 +270,14 @@ export class ClientFilesComponent implements OnInit {
     if (!file.previewable) return;
     try {
       const url = await this.fileService.createSignedUrl(file.storage_path);
+      const isPhone = window.matchMedia('(max-width: 600px)').matches;
       this.dialog.open(FilePreviewDialogComponent, {
         data: { name: file.name, url },
-        width: '80vw',
-        maxWidth: '960px'
+        width: isPhone ? '100vw' : '80vw',
+        maxWidth: isPhone ? '100vw' : '960px',
+        height: isPhone ? '100dvh' : undefined,
+        maxHeight: isPhone ? '100dvh' : undefined,
+        panelClass: isPhone ? 'fullscreen-dialog' : undefined
       });
     } catch (error: any) {
       this.snackbar.error(error?.message || 'No se pudo abrir la vista previa.');
@@ -240,8 +286,14 @@ export class ClientFilesComponent implements OnInit {
 
   async downloadFile(file: FileCard): Promise<void> {
     try {
-      const url = await this.fileService.createSignedUrl(file.storage_path);
-      window.open(url, '_blank');
+      const url = await this.fileService.createSignedDownloadUrl(file.storage_path, file.name);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = file.name;
+      a.rel = 'noopener';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
     } catch (error: any) {
       this.snackbar.error(error?.message || 'No se pudo descargar el archivo.');
     }

@@ -570,6 +570,22 @@ body.freca-body {
   gap: var(--space-sm);
 }
 
+// Fullscreen dialog variant — used for the file preview on phones so PDFs and
+// images get the full viewport instead of a 304px-wide cramped iframe.
+.fullscreen-dialog {
+  max-width: 100vw !important;
+
+  .mat-mdc-dialog-container {
+    --mdc-dialog-container-shape: 0 !important;
+  }
+
+  .mdc-dialog__surface {
+    border-radius: 0 !important;
+    max-width: 100vw !important;
+    max-height: 100dvh !important;
+  }
+}
+
 // ============================================
 // Snackbar Overrides
 // ============================================

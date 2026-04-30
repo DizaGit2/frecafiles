@@ -53,4 +53,8 @@ export class AppComponent {
     const route = await this.auth.getHomeRoute();
     await this.router.navigate([route]);
   }
+
+  getInitial(fullName: string | null | undefined): string {
+    return fullName?.trim().charAt(0).toUpperCase() || '?';
+  }
 }
