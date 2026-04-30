@@ -42,10 +42,15 @@ create index if not exists idx_file_clients_client on public.file_clients(client
 create index if not exists idx_files_created_by on public.files(created_by);
 create index if not exists idx_files_category_id on public.files(category_id);
 
+-- SECURITY DEFINER bypasses RLS on the inner profiles read so that policies
+-- referencing is_admin() (e.g. on profiles itself) cannot recurse through it
+-- and blow the stack. Must run with a fixed search_path for safety.
 create or replace function public.is_admin()
 returns boolean
 language sql
 stable
+security definer
+set search_path = public, pg_temp
 as $$
   select exists (
     select 1 from public.profiles
@@ -108,6 +113,12 @@ create policy "Admin full access to file clients"
   for all
   using (public.is_admin())
   with check (public.is_admin());
+
+drop policy if exists "Clients can read own file clients" on public.file_clients;
+create policy "Clients can read own file clients"
+  on public.file_clients
+  for select
+  using (client_user_id = auth.uid());
 
 -- Categories policies
 drop policy if exists "Admin full access to categories" on public.categories;
